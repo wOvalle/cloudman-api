@@ -2,7 +2,8 @@ var Promise = require('bluebird'),
     _ = require('lodash'),
     ec2Collection = require('./ec2Collection');
 
-var initEC2 = function(config){
+/*Internal method, Pending Doc*/
+var _initEC2 = function(config){
     return new Promise(function(resolve, reject) {
 
         if (!config) return reject('Bad configuration');
@@ -21,6 +22,15 @@ var initEC2 = function(config){
     });
 };
 
+/*Pending Doc.
+    
+    Input: config {
+        key: Aws key.
+        secret: Aws secret 
+        region: Aws region.
+    }
+
+*/
 var status = function (config) {
 	return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
@@ -28,15 +38,16 @@ var status = function (config) {
         var arrInstances = [],
             instance = {};
 
-        initEC2(config)
-            .then(getStatus)
+        _initEC2(config)
+            .then(_getStatus)
             .then(resolve)
             .catch(handleError);
 
     });
 };
 
-var getStatus = function(ec2){
+/*Internal method, Pending Doc*/
+var _getStatus = function(ec2){
     return new Promise(function(resolve, reject){
         var collection = new ec2Collection();
         ec2.describeInstances({}, function (err, data) {
@@ -50,7 +61,14 @@ var getStatus = function(ec2){
     });
 };
 
+/*Missing API required stop method*/
+/*Missing API required start method*/
+/*Missing API required terminate method*/
+/*Missing API required create method*/
+
+/*Pending Doc*/
 var handleError = function(err){
+    //TODO (maybe): Errors should be logged in here.
     console.log(err.stack);
 };
 
