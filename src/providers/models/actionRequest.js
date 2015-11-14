@@ -16,9 +16,9 @@
 
 module.exports = function ()
 {
-	this.action: '', 
-	this.actionProcessed: false; 
-	this.err: {}; 
-	this.errMessage: ''; 
-	this.input: {}''
+	this.action = '', 
+	this.actionProcessed = false; 
+	this.err = {}; 
+	this.errMessage = ''; 
+	this.input = {};
 };
