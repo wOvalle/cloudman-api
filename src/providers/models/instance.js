@@ -1,6 +1,9 @@
 /*
- TODO:
- - refactor objects like IP && dns
+	instance::
+		description: 	define global instances properties. Represent a virtual machine 
+						in a cloud provider.
+
+		TODO: describe all the properties
  */
 
 module.exports = function ()

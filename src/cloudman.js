@@ -1,49 +1,50 @@
 /*
-	----API IMPLEMENTATION----
+	cloudman::
+		description: here we should have a provider-less implementation for the API.
 
-	Here we should have a provider-less implementation for the API.
 
-	Methods that must be implemented: 
-	status -> get status of current vm's in all environments.
-		input: Array of unique names of credentials (see key in cred.js array).
-		output: Array of instances. See src/models/instances.
+	cloudman::status  
+		description: 	get status vm's (machines, instances) in provided keyNames (in the account 
+						related to the keyName, see cred.js).
 	
-	stop-> stop instances.
-		input: array of instances keyvalues [{key : instanceId}] to stop (see key in cred.js array). 
-		output: array of stopRequest (corresponding the values passed in input) with request resolution.
-		actionRequest: [{action: 'stop', actionProcessed: true/false; err: err; errMessage: messageError; inputKeyValue: inputParameter}] 
+		input: Array of unique keyName  ['keyname1', 'keyname2'...] (see keyName in cred.js).
 
-	start-> start instances.
-		input: array of instances keyvalues [{key : instanceId}] to start (see key in cred.js array). 
-		output: array of startRequest (corresponding the values passed in input) with request resolution.
-		actionRequest: [{action: 'start', actionProcessed: true/false; err: err; errMessage: messageError; inputKeyValue: inputParameter}] 
+		output: Array of instances. [{}, {}...] (See src/models/instances).
+	
 
-	terminate-> start instances.
-		input: array of instances keyvalues [{key : instanceId}] to start (see key in cred.js array). 
-		output: array of startRequest (corresponding the values passed in input) with request resolution.
-		actionRequest: [{action: 'terminate', actionProcessed: true/false; err: err; errMessage: messageError; inputKeyValue: inputParameter}] 
+	cloudman::stop 
+		description: stop given instances.
 
-	create-> start instances.
-		input: array of instances keyvalues [{key : instanceId, properties: properties}] being key unique connection key in cred.js and 
-			   properties array of attributes that vm will have on creation. 
-		output: array of createRequest (corresponding the values passed in input) with request resolution.
-		actionRequest: [{action: 'create', actionProcessed: true/false; err: err; errMessage: messageError; inputKeyValue: inputParameter}] 
+		input: 	array of matching instances (see src/models/matchingInstance) to stop. 
+		
+		output: array of action request (see src/models/actionRequest) with request resolution.
+		
+		
+	cloudman::start 
+		description: start given instances.
+		
+		input: 	array of matching instances (see src/models/matchingInstance) to start. 
+		
+		output: array of start request (see src/models/actionRequest) with request resolution.
+		
 
-	TODO:
-		- define actionRequest and create a model for that.
-		- define what properties in createRequest will be.
+	cloudman::terminate 
+		description: terminate (delete, dismiss) given instances.
+		
+		input: 	array of matching instances (see src/models/matchingInstance) to terminate. 
+		
+		output: array of terminate request (see src/models/actionRequest) with request resolution.
 
-	TODO (maybe): 
-		- terminate can receive custom terminate behavior (ej. force to erase (or not to) disk when terminate, for example).
+
+	cloudman::create 
+		description: create given instances.
+		
+		input: 	array of matching instances (see src/models/newInstance) to create. 
+		
+		output: array of create request (see src/models/actionRequest) with request resolution.
+
 
 	Assumptions: 
 		- Everything will return promises. When pass = resolve output params. When fail = reject err.
 
-*/
-
-/*
-	For testing purposes, we're just exposing aws implementations.
-
-	TODO: 
-		- Export api implementation as described before.
 */
