@@ -35,9 +35,6 @@ var status = function (config) {
 	return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
 
-        var arrInstances = [],
-            instance = {};
-
         _initEC2(config)
             .then(_getStatus)
             .then(resolve)

@@ -47,4 +47,3 @@
 	TODO: 
 		- Export api implementation as described before.
 */
-module.exports = require('./providers/aws/aws');
