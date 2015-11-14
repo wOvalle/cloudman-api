@@ -13,3 +13,9 @@
 		- terminate can receive custom terminate behavior (ej. force to erase (or not to) disk 
 		  when terminate, for example).
 */
+
+module.exports = function ()
+{
+	this.keyName = '';
+    this.properties = {};
+};
