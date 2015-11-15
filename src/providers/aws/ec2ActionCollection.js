@@ -11,9 +11,15 @@ var ec2Action = function(){
 ec2Action.prototype.parseAction = function(data, action){
     var self = this;
     var actionAWS = '';
+    var possibleStatus = [];
 
-    if(action === 'stop') //todo: finish this if for start and terminate.
+    if(action === 'stop')//todo: finish this if for start and terminate.
+    {
         actionAWS = 'StoppingInstances';
+        possibleStatus = [32, 64, 80];
+    }
+    //else if(action === 'start')....
+    else return {}; 
 
     if(!_.get(data, '_action_[0].InstanceId'.replace('_action_', actionAWS))) return {};
 
@@ -21,7 +27,7 @@ ec2Action.prototype.parseAction = function(data, action){
             var ar = new models.actionRequest();
             ar.action = action;
             ar.input = data.InstanceId;
-            ar.actionProcessed = [32, 64, 80].indexOf(data.CurrentState) === -1 ? true : false; 
+            ar.actionProcessed = possibleStatus.indexOf(data.CurrentState.Code) > -1 ? true : false; 
 
             if(!ar.actionProcessed)
             {
