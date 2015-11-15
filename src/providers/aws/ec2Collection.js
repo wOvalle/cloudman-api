@@ -5,6 +5,9 @@ var instanceCollection = function(){
     this.instances = [];
 };
 
+/*
+    Todo: document this.
+*/
 instanceCollection.prototype.parseReservation = function(data){
     var self = this;
     if(!data || _.size(data.Reservations) < 1 || _.size(data.Reservations[0].Instances) < 1) return {};
@@ -30,5 +33,6 @@ instanceCollection.prototype.parseReservation = function(data){
         });
     });
 };
+
 
 module.exports = instanceCollection;

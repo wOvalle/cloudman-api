@@ -1,6 +1,7 @@
 var Promise = require('bluebird'),
     _ = require('lodash'),
-    ec2Collection = require('./ec2Collection');
+    ec2Collection = require('./ec2Collection'),
+    ec2ActionCollection = require('./ec2ActionCollection');
 
 /*Internal method, Pending Doc*/
 var _initEC2 = function(config){
@@ -43,6 +44,25 @@ var status = function (config) {
     });
 };
 
+
+/*
+    TODO: missing documentation
+*/
+var stop = function (config, instancesIds) {
+    return new Promise(function(resolve, reject) {
+        if(!config) return reject('config var must have credential information.');
+        if(!instancesIds) return reject('instancesIds must have an array of instances to stop.');
+
+        _initEC2(config)
+            .then(function(ec2){
+                return _stopInstances(ec2, instancesIds);
+            })
+            .then(resolve)
+            .catch(handleError);
+
+    });
+};
+
 /*Internal method, Pending Doc*/
 var _getStatus = function(ec2){
     return new Promise(function(resolve, reject){
@@ -58,7 +78,23 @@ var _getStatus = function(ec2){
     });
 };
 
-/*Missing API required stop method*/
+/*Internal method, Pending Doc*/
+var _stopInstances = function(ec2, InstanceIds){
+    return new Promise(function(resolve, reject){
+        var actionCollection = new ec2ActionCollection();
+
+        var params = {InstanceIds: InstanceIds}; //todo: refactor this.
+        ec2.stopInstances(params, function (err, data) {
+            if (err)
+                return reject(err);
+            else {
+                actionCollection.parseAction(data, 'stop');
+                resolve(actionCollection.actions);
+            }
+        });
+    });
+};
+
 /*Missing API required start method*/
 /*Missing API required terminate method*/
 /*Missing API required create method*/
@@ -70,5 +106,6 @@ var handleError = function(err){
 };
 
 module.exports = {
-	status: status
+	status: status,
+    stop: stop
 };
