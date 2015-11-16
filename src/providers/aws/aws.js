@@ -44,7 +44,6 @@ var status = function (config) {
     });
 };
 
-
 /*
     TODO: missing documentation
 */
@@ -59,7 +58,40 @@ var stop = function (config, instancesIds) {
             })
             .then(resolve)
             .catch(handleError);
+    });
+};
 
+/*
+    TODO: missing documentation
+*/
+var start = function (config, instancesIds) {
+    return new Promise(function(resolve, reject) {
+        if(!config) return reject('config var must have credential information.');
+        if(!instancesIds) return reject('instancesIds must have an array of instances to start.');
+
+        _initEC2(config)
+            .then(function(ec2){
+                return _startInstances(ec2, instancesIds);
+            })
+            .then(resolve)
+            .catch(handleError);
+    });
+};
+
+/*
+    TODO: missing documentation
+*/
+var terminate = function (config, instancesIds) {
+    return new Promise(function(resolve, reject) {
+        if(!config) return reject('config var must have credential information.');
+        if(!instancesIds) return reject('instancesIds must have an array of instances to terminate.');
+
+        _initEC2(config)
+            .then(function(ec2){
+                return _terminateInstances(ec2, instancesIds);
+            })
+            .then(resolve)
+            .catch(handleError);
     });
 };
 
@@ -95,7 +127,40 @@ var _stopInstances = function(ec2, InstanceIds){
     });
 };
 
-/*Missing API required start method*/
+/*Internal method, Pending Doc*/
+var _startInstances = function(ec2, InstanceIds){
+    return new Promise(function(resolve, reject){
+        var actionCollection = new ec2ActionCollection();
+
+        var params = {InstanceIds: InstanceIds}; //todo: refactor this.
+        ec2.startInstances(params, function (err, data) {
+            if (err)
+                return reject(err);
+            else {
+                actionCollection.parseAction(data, 'start');
+                resolve(actionCollection.actions);
+            }
+        });
+    });
+};
+
+/*Internal method, Pending Doc*/
+var _terminateInstances = function(ec2, InstanceIds){
+    return new Promise(function(resolve, reject){
+        var actionCollection = new ec2ActionCollection();
+
+        var params = {InstanceIds: InstanceIds}; //todo: refactor this.
+        ec2.terminateInstances(params, function (err, data) {
+            if (err)
+                return reject(err);
+            else {
+                actionCollection.parseAction(data, 'terminate');
+                resolve(actionCollection.actions);
+            }
+        });
+    });
+};
+
 /*Missing API required terminate method*/
 /*Missing API required create method*/
 
@@ -107,5 +172,7 @@ var handleError = function(err){
 
 module.exports = {
 	status: status,
-    stop: stop
+    stop: stop,
+    start: start,
+    terminate: terminate
 };
