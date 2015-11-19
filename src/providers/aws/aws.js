@@ -1,6 +1,6 @@
 var Promise = require('bluebird'),
     _ = require('lodash'),
-    ec2Collection = require('./ec2Collection'),
+    ec2Collection = require('./ec2InstanceCollection'),
     ec2ActionCollection = require('./ec2ActionCollection');
 
 /*Internal method, Pending Doc*/
@@ -38,7 +38,9 @@ var status = function (config) {
 
         _initEC2(config)
             .then(_getStatus)
-            .then(resolve)
+            .then(function(res){
+                resolve(res.instances);
+            })
             .catch(handleError);
 
     });
