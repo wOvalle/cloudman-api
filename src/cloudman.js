@@ -49,7 +49,7 @@ exports.status = function(keyNames){
 /*
 * cloudman::start
 *
-* description: 		start vm's (machines, instances) in provided keyNames (in the account
+* description: 		start vm's (machines, instances) in provided matchingInstances (in the account
 * 					related to the keyName, see cred.js).
 *
 * input: 	Array of matching instances (see src/models/matchingInstance) to start. 
@@ -64,15 +64,17 @@ exports.start = function(matchingInstances){
 		});
 		var cred = setCredentials(matchingInstancesKeyNames, credentials);
 		var awsCred = filterProvider(cred, 'aws');
-		var awsMatchingInstances = filterMatchingInstances(awsCred, credentials);
-
-		var promise_aws = _.map(awsMatchingInstances, function(awsInstances){
-			var awsCredKeyNames = awsCred.map(function(cr){
-				return cr.keyName;
+		var awsMatchingInstances = filterMatchingInstances(awsCred, matchingInstances);
+		
+		var promise_aws = _.map(awsCred, function(cr){
+			var currentAwsInstances = awsMatchingInstances.filter(function(instance){
+				return instance.keyName === cr.keyName;
 			});
-			var currentAwsCred = awsCred[awsCredKeyNames.indexOf(awsInstances.keyName)];
+			var currentAwsInstancesIds = currentAwsInstances.map(function(instance){
+				return instance.instanceId;
+			});
 
-			return aws.start(currentAwsCred, awsInstances);
+			return aws.start(cr, currentAwsInstancesIds);
 		});
 
 		return Promise.all(promise_aws)
@@ -84,7 +86,7 @@ exports.start = function(matchingInstances){
 /*
 * cloudman::stop
 *
-* description: 		stop vm's (machines, instances) in provided keyNames (in the account
+* description: 		stop vm's (machines, instances) in provided matchingInstances (in the account
 * 					related to the keyName, see cred.js).
 *
 * input: 	Array of matching instances (see src/models/matchingInstance) to stop. 
@@ -99,15 +101,17 @@ exports.stop = function(matchingInstances){
 		});
 		var cred = setCredentials(matchingInstancesKeyNames, credentials);
 		var awsCred = filterProvider(cred, 'aws');
-		var awsMatchingInstances = filterMatchingInstances(awsCred, credentials);
-
-		var promise_aws = _.map(awsMatchingInstances, function(awsInstances){
-			var awsCredKeyNames = awsCred.map(function(cr){
-				return cr.keyName;
+		var awsMatchingInstances = filterMatchingInstances(awsCred, matchingInstances);
+		
+		var promise_aws = _.map(awsCred, function(cr){
+			var currentAwsInstances = awsMatchingInstances.filter(function(instance){
+				return instance.keyName === cr.keyName;
 			});
-			var currentAwsCred = awsCred[awsCredKeyNames.indexOf(awsInstances.keyName)];
-			
-			return aws.stop(currentAwsCred, awsInstances);
+			var currentAwsInstancesIds = currentAwsInstances.map(function(instance){
+				return instance.instanceId;
+			});
+
+			return aws.stop(cr, currentAwsInstancesIds);
 		});
 
 		return Promise.all(promise_aws)
@@ -119,7 +123,7 @@ exports.stop = function(matchingInstances){
 /*
 * cloudman::terminate
 *
-* description: 		terminate vm's (machines, instances) in provided keyNames (in the account
+* description: 		terminate vm's (machines, instances) in provided matchingInstances (in the account
 * 					related to the keyName, see cred.js).
 *
 * input: 	Array of matching instances (see src/models/matchingInstance) to terminate. 
@@ -134,15 +138,17 @@ exports.terminate = function(matchingInstances){
 		});
 		var cred = setCredentials(matchingInstancesKeyNames, credentials);
 		var awsCred = filterProvider(cred, 'aws');
-		var awsMatchingInstances = filterMatchingInstances(awsCred, credentials);
-
-		var promise_aws = _.map(awsMatchingInstances, function(awsInstances){
-			var awsCredKeyNames = awsCred.map(function(cr){
-				return cr.keyName;
+		var awsMatchingInstances = filterMatchingInstances(awsCred, matchingInstances);
+		
+		var promise_aws = _.map(awsCred, function(cr){
+			var currentAwsInstances = awsMatchingInstances.filter(function(instance){
+				return instance.keyName === cr.keyName;
 			});
-			var currentAwsCred = awsCred[awsCredKeyNames.indexOf(awsInstances.keyName)];
-			
-			return aws.terminate(currentAwsCred, awsInstances);
+			var currentAwsInstancesIds = currentAwsInstances.map(function(instance){
+				return instance.instanceId;
+			});
+
+			return aws.terminate(cr, currentAwsInstancesIds);
 		});
 
 		return Promise.all(promise_aws)
