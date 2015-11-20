@@ -163,7 +163,6 @@ var _terminateInstances = function(ec2, InstanceIds){
     });
 };
 
-/*Missing API required terminate method*/
 /*Missing API required create method*/
 
 /*Pending Doc*/
