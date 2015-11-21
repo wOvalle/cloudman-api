@@ -1,8 +1,16 @@
 var cman = require('./src/providers/aws/aws');
-var beautify = require('js-beautify').js_beautify
+var cloudman = require('./src/cloudman');
+var beautify = require('js-beautify').js_beautify;
 /*test config*/
-var config = require('./src/cred')[0];
-var instances = ['i-9fbe3f5b', 'i-0ef677ca'];
+var instances = [{
+		keyName: 'main-aws',
+		instanceId: 'i-9fbe3f5b'
+	}, 
+	{
+		keyName: 'main-aws',
+		instanceId:'i-0ef677ca'
+	}];
+
 
 //getStatus -> startIntances -> getStatus -> stopIntances -> getStatus
 getStatus().then(function(){
@@ -21,7 +29,10 @@ getStatus().then(function(){
 	});
 
 function getStatus(){
-	return cman.status(config)
+	var intancesKeyNames = instances.map(function(inst){
+		return inst.keyName;
+	});
+	return cloudman.status(intancesKeyNames)
 	    .then(function(res){
 			console.log('****Actual status****');
 			console.log('data', beautify(JSON.stringify(res)));
@@ -30,7 +41,7 @@ function getStatus(){
 }
 
 function startIntances(){
-	return cman.start(config, instances)
+	return cloudman.start(instances)
 	    .then(function(res){
 			console.log('****Start instances****');
 			console.log('data', beautify(JSON.stringify(res)));
@@ -39,7 +50,7 @@ function startIntances(){
 }
 
 function stopIntances(){
-	return cman.stop(config, instances)
+	return cloudman.stop(instances)
 	    .then(function(res){
 			console.log('****Stop instances****');
 			console.log('data', beautify(JSON.stringify(res)));
@@ -48,7 +59,7 @@ function stopIntances(){
 }
 
 function terminateIntances(){
-	return cman.terminate(config, instances)
+	return cloudman.terminate(instances)
 	    .then(function(res){
 			console.log('data', beautify(JSON.stringify(res)));
 	    })

@@ -70,7 +70,6 @@ var start = function (config, instancesIds) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
         if(!instancesIds) return reject('instancesIds must have an array of instances to start.');
-
         _initEC2(config)
             .then(function(ec2){
                 return _startInstances(ec2, instancesIds);
@@ -163,7 +162,6 @@ var _terminateInstances = function(ec2, InstanceIds){
     });
 };
 
-/*Missing API required terminate method*/
 /*Missing API required create method*/
 
 /*Pending Doc*/
