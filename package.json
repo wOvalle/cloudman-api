@@ -1,0 +1,16 @@
+{
+  "name": "cloudman-api",
+  "version": "0.0.1",
+  "description": ""
+  "dependencies": {
+    "aws-sdk": "^2.2.18",
+    "bluebird": "^3.0.5",
+    "lodash": "^3.10.1"
+  },
+  "devDependencies": {
+    "js-beautify": "^1.5.10",
+    "mocha": "^2.3.4",
+    "should": "^7.1.1",
+    "should-promised": "^0.3.1"
+  }
+}
