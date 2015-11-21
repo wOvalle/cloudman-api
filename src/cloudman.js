@@ -33,6 +33,8 @@ var 	_ = require('lodash'),
 * */
 exports.status = function(keyNames){
 	return new Promise(function(resolve, reject){
+		if(!keyNames) return reject('keyNames parameter is required');
+
 		var cred = setCredentials(keyNames, credentials);
 		var awsCred = filterProvider(cred, 'aws');
 
@@ -59,6 +61,8 @@ exports.status = function(keyNames){
 * */
 exports.start = function(matchingInstances){
 	return new Promise(function(resolve, reject){
+        if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
+
 		var matchingInstancesKeyNames = matchingInstances.map(function(mi){
 			return mi.keyName;
 		});
@@ -96,6 +100,8 @@ exports.start = function(matchingInstances){
 * */
 exports.stop = function(matchingInstances){
 	return new Promise(function(resolve, reject){
+        if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
+
 		var matchingInstancesKeyNames = matchingInstances.map(function(mi){
 			return mi.keyName;
 		});
@@ -133,6 +139,8 @@ exports.stop = function(matchingInstances){
 * */
 exports.terminate = function(matchingInstances){
 	return new Promise(function(resolve, reject){
+        if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
+
 		var matchingInstancesKeyNames = matchingInstances.map(function(mi){
 			return mi.keyName;
 		});
