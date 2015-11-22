@@ -18,7 +18,8 @@
 var 	_ = require('lodash'),
  		Promise = require('bluebird'),
 	 	credentials = require('./cred'),
-	 	aws = require('./providers/aws/aws');
+	 	aws = require('./providers/aws/aws'),
+        _do = require('./providers/do/do'); //do is reserved in javascript, so _do it is
 
 /*
 * cloudman::status
@@ -37,14 +38,23 @@ exports.status = function(keyNames){
 
 		var cred = setCredentials(keyNames, credentials);
 		var awsCred = filterProvider(cred, 'aws');
+        var doCred = filterProvider(cred, 'do');
 
 		var promise_aws = _.map(awsCred, function(cr){
-			return aws.status(cr);
-		});
+            return aws.status(cr);
+        });
 
-		return Promise.all(promise_aws)
-			.then(flattenize)
-			.then(resolve);
+        var promise_do = _.map(doCred, function(cr){
+            return _do.status(cr);
+        });
+
+        return flattenize([promise_aws, promise_do])
+            .then(function(data){
+                return Promise.all(data);
+            })
+            .then(flattenize)
+            .then(resolve);
+
 	});
 };
 
