@@ -18,7 +18,8 @@
 var 	_ = require('lodash'),
  		Promise = require('bluebird'),
 	 	credentials = require('./cred'),
-	 	aws = require('./providers/aws/aws');
+	 	aws = require('./providers/aws/aws'),
+        _do = require('./providers/do/do'); //do is reserved in javascript, so _do it is
 
 /*
 * cloudman::status
@@ -35,16 +36,23 @@ exports.status = function(keyNames){
 	return new Promise(function(resolve, reject){
 		if(!keyNames) return reject('keyNames parameter is required');
 
-		var cred = setCredentials(keyNames, credentials);
-		var awsCred = filterProvider(cred, 'aws');
+        var cred = splitProvidersFromCredentials(keyNames, credentials);
 
-		var promise_aws = _.map(awsCred, function(cr){
-			return aws.status(cr);
-		});
+		var promise_aws = _.map(cred.aws, function(cr){
+            return aws.status(cr);
+        });
 
-		return Promise.all(promise_aws)
-			.then(flattenize)
-			.then(resolve);
+        var promise_do = _.map(cred.do, function(cr){
+            return _do.status(cr);
+        });
+
+        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
+            .then(function(data){
+                return Promise.all(data);
+            })
+            .then(flattenize)
+            .then(resolve);
+
 	});
 };
 
@@ -63,25 +71,20 @@ exports.start = function(matchingInstances){
 	return new Promise(function(resolve, reject){
         if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
 
-		var matchingInstancesKeyNames = matchingInstances.map(function(mi){
-			return mi.keyName;
-		});
-		var cred = setCredentials(matchingInstancesKeyNames, credentials);
-		var awsCred = filterProvider(cred, 'aws');
-		var awsMatchingInstances = filterMatchingInstances(awsCred, matchingInstances);
+        var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 		
-		var promise_aws = _.map(awsCred, function(cr){
-			var currentAwsInstances = awsMatchingInstances.filter(function(instance){
-				return instance.keyName === cr.keyName;
-			});
-			var currentAwsInstancesIds = currentAwsInstances.map(function(instance){
-				return instance.instanceId;
-			});
-
-			return aws.start(cr, currentAwsInstancesIds);
+		var promise_aws = _.map(insWithCred.aws, function(i){
+			return aws.start(i.cred, [i.instanceId]);
 		});
 
-		return Promise.all(promise_aws)
+        var promise_do = _.map(insWithCred.do, function(i){
+            return _do.start(i.cred, i.instanceId);
+        });
+
+		return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
+            .then(function(data){
+                return Promise.all(data);
+            })
 			.then(flattenize)
 			.then(resolve);
 	});
@@ -102,25 +105,20 @@ exports.stop = function(matchingInstances){
 	return new Promise(function(resolve, reject){
         if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
 
-		var matchingInstancesKeyNames = matchingInstances.map(function(mi){
-			return mi.keyName;
-		});
-		var cred = setCredentials(matchingInstancesKeyNames, credentials);
-		var awsCred = filterProvider(cred, 'aws');
-		var awsMatchingInstances = filterMatchingInstances(awsCred, matchingInstances);
-		
-		var promise_aws = _.map(awsCred, function(cr){
-			var currentAwsInstances = awsMatchingInstances.filter(function(instance){
-				return instance.keyName === cr.keyName;
-			});
-			var currentAwsInstancesIds = currentAwsInstances.map(function(instance){
-				return instance.instanceId;
-			});
+        var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 
-			return aws.stop(cr, currentAwsInstancesIds);
-		});
+        var promise_aws = _.map(insWithCred.aws, function(i){
+            return aws.stop(i.cred, [i.instanceId]);
+        });
 
-		return Promise.all(promise_aws)
+        var promise_do = _.map(insWithCred.do, function(i){
+            return _do.stop(i.cred, [i.instanceId]);
+        });
+
+		return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
+            .then(function(data){
+                return Promise.all(data);
+            })
 			.then(flattenize)
 			.then(resolve);
 	});
@@ -141,23 +139,11 @@ exports.terminate = function(matchingInstances){
 	return new Promise(function(resolve, reject){
         if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
 
-		var matchingInstancesKeyNames = matchingInstances.map(function(mi){
-			return mi.keyName;
-		});
-		var cred = setCredentials(matchingInstancesKeyNames, credentials);
-		var awsCred = filterProvider(cred, 'aws');
-		var awsMatchingInstances = filterMatchingInstances(awsCred, matchingInstances);
-		
-		var promise_aws = _.map(awsCred, function(cr){
-			var currentAwsInstances = awsMatchingInstances.filter(function(instance){
-				return instance.keyName === cr.keyName;
-			});
-			var currentAwsInstancesIds = currentAwsInstances.map(function(instance){
-				return instance.instanceId;
-			});
+        var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 
-			return aws.terminate(cr, currentAwsInstancesIds);
-		});
+        var promise_aws = _.map(insWithCred.aws, function(i){
+            return aws.terminate(i.cred, [i.instanceId]);
+        });
 
 		return Promise.all(promise_aws)
 			.then(flattenize)
@@ -180,12 +166,60 @@ var flattenize = function(data){
 		resolve(_.flatten(data));
 	});
 };
+/*
+ * cloudman::splitProvidersFromCredentials
+ *
+ * description: 	Receives one array of keyNames and one array of credentials and
+ * 					returns an array ofcredentials grouped by provider.
+ *
+ * input: 	keyName array.
+ * 			credentials array.
+ *
+ * output: 	filtered array.
+ *
+ * */
+var splitProvidersFromCredentials = function(_keyNames, _credentials){
+    return _.filter(_credentials, function(cred){
+        return _keyNames.indexOf(cred.keyName) >= 0;
+    }).reduce(function(res, cred){
+        res[cred.provider] = res[cred.provider]  || [];
+        res[cred.provider].push(cred);
+        return res;
+    }, {});
+};
 
+/*
+ * cloudman::splitInstancesWithCredentials
+ *
+ * description: 	Receives one array of instances {instanceID, keyName} and one array of
+ * 					credentials and returns an each instance with their corresponding cre-
+ * 				    dential grouped by provider.
+ *
+ * input: 	instance array.
+ * 			credentials array.
+ *
+ * output: 	filtered array.
+ *
+ * */
+var splitInstancesWithCredentials = function(_instances, _credentials){
+    return _instances.map(function(instance){ //add their credential to each instance
+        instance.credential = _.find(credentials,{keyName: instance.keyName});
+        return instance;
+    }).reduce(function(res, instance){ //return an object grouped by [provider][keyName]
+        res[instance.credential.provider] = res[instance.credential.provider] || [];
+        res[instance.credential.provider].push({instanceId: instance.instanceId, cred: instance.credential});
+        return res;
+    },{});
+};
+
+
+
+/*DEPRECATED METHODS*/
 /*
  * cloudman::setCredentials
  *
  * description: 	Receives one array of keyNames and one array of credentials
-  * 				and returns all the credentials with the given keyNames.
+ * 				and returns all the credentials with the given keyNames.
  *
  * input: 	keyNames array
  * 			credentials array.
@@ -194,9 +228,9 @@ var flattenize = function(data){
  *
  * */
 var setCredentials = function(_keyNames, _credentials){
-	return _.filter(_credentials, function(cred){
-		return _keyNames.indexOf(cred.keyName) >= 0;
-	});
+    return _.filter(_credentials, function(cred){
+        return _keyNames.indexOf(cred.keyName) >= 0;
+    });
 };
 
 /*
@@ -212,9 +246,9 @@ var setCredentials = function(_keyNames, _credentials){
  *
  * */
 var filterProvider = function(_cred, _provider){
-	return _.filter(_cred, function(cr){
-		return cr.provider === _provider;
-	});
+    return _.filter(_cred, function(cr){
+        return cr.provider === _provider;
+    });
 };
 
 /*
@@ -230,11 +264,11 @@ var filterProvider = function(_cred, _provider){
  *
  * */
 var filterMatchingInstances = function(_cred, _matchingInstances){
-	var _credKeyNames = _cred.map(function(cr){
-		return cr.keyName;
-	});
+    var _credKeyNames = _cred.map(function(cr){
+        return cr.keyName;
+    });
 
-	return _.filter(_matchingInstances, function(mi){
-		return _credKeyNames.indexOf(mi.keyName) >= 0; 
-	});
+    return _.filter(_matchingInstances, function(mi){
+        return _credKeyNames.indexOf(mi.keyName) >= 0;
+    });
 };
