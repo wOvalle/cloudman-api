@@ -36,19 +36,17 @@ exports.status = function(keyNames){
 	return new Promise(function(resolve, reject){
 		if(!keyNames) return reject('keyNames parameter is required');
 
-		var cred = setCredentials(keyNames, credentials);
-		var awsCred = filterProvider(cred, 'aws');
-        var doCred = filterProvider(cred, 'do');
+        var cred = splitProvidersFromCredentials(keyNames, credentials);
 
-		var promise_aws = _.map(awsCred, function(cr){
+		var promise_aws = _.map(cred.aws, function(cr){
             return aws.status(cr);
         });
 
-        var promise_do = _.map(doCred, function(cr){
+        var promise_do = _.map(cred.do, function(cr){
             return _do.status(cr);
         });
 
-        return flattenize([promise_aws, promise_do])
+        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
             .then(function(data){
                 return Promise.all(data);
             })
@@ -76,6 +74,7 @@ exports.start = function(matchingInstances){
 		var matchingInstancesKeyNames = matchingInstances.map(function(mi){
 			return mi.keyName;
 		});
+
 		var cred = setCredentials(matchingInstancesKeyNames, credentials);
 		var awsCred = filterProvider(cred, 'aws');
 		var awsMatchingInstances = filterMatchingInstances(awsCred, matchingInstances);
@@ -247,4 +246,32 @@ var filterMatchingInstances = function(_cred, _matchingInstances){
 	return _.filter(_matchingInstances, function(mi){
 		return _credKeyNames.indexOf(mi.keyName) >= 0; 
 	});
+};
+
+/*
+ * cloudman::splitProvidersFromCredentials
+ *
+ * description: 	Receives one array of keyNames and one array of credentials and
+ * 					returns an object with providers as properties and each provider
+ * 				    with an array of credentials
+ *
+ * input: 	keyName array.
+ * 			credentials array.
+ *
+ * output: 	filtered array.
+ *
+ * */
+var splitProvidersFromCredentials = function(_keyNames, _credentials){
+    var validCred = _.filter(_credentials, function(cred){
+        return _keyNames.indexOf(cred.keyName) >= 0;
+    });
+
+
+    var providers = validCred.reduce(function(res, cred){
+        res[cred.provider] = res[cred.provider]  || [];
+        res[cred.provider].push(cred);
+        return res;
+    }, {});
+
+    return providers;
 };
