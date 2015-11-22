@@ -77,7 +77,14 @@ exports.start = function(matchingInstances){
 			return aws.start(i.cred, [i.instanceId]);
 		});
 
-		return Promise.all(promise_aws)
+        var promise_do = _.map(insWithCred.do, function(i){
+            return _do.start(i.cred, i.instanceId);
+        });
+
+		return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
+            .then(function(data){
+                return Promise.all(data);
+            })
 			.then(flattenize)
 			.then(resolve);
 	});
@@ -104,7 +111,14 @@ exports.stop = function(matchingInstances){
             return aws.stop(i.cred, [i.instanceId]);
         });
 
-		return Promise.all(promise_aws)
+        var promise_do = _.map(insWithCred.do, function(i){
+            return _do.stop(i.cred, [i.instanceId]);
+        });
+
+		return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
+            .then(function(data){
+                return Promise.all(data);
+            })
 			.then(flattenize)
 			.then(resolve);
 	});
