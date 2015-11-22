@@ -56,7 +56,23 @@ var start = function (config, dropletId) {
  */
 var terminate = function (config, dropletId) {
     return new Promise(function(resolve, reject) {
-        reject("not implemented");
+
+        var actionCollection = new doActionCollection();
+
+        _init(config)
+            .then(function(api){
+                api.dropletsDelete(dropletId, function(err, res, body){
+                    if (err)
+                        return reject(err);
+                    else {
+                        actionCollection.parseAction(body, {type: 'delete'}, dropletId);
+                        resolve(actionCollection.actions);
+                    }
+
+                });
+            })
+            .catch(handleError);
+
     });
 };
 

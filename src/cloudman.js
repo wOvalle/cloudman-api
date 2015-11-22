@@ -46,7 +46,7 @@ exports.status = function(keyNames){
             return _do.status(cr);
         });
 
-        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
+        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
             .then(function(data){
                 return Promise.all(data);
             })
@@ -81,7 +81,7 @@ exports.start = function(matchingInstances){
             return _do.start(i.cred, i.instanceId);
         });
 
-		return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
+		return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
             .then(function(data){
                 return Promise.all(data);
             })
@@ -112,15 +112,15 @@ exports.stop = function(matchingInstances){
         });
 
         var promise_do = _.map(insWithCred.do, function(i){
-            return _do.stop(i.cred, [i.instanceId]);
+            return _do.stop(i.cred, i.instanceId);
         });
 
-		return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map return array
+        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
             .then(function(data){
                 return Promise.all(data);
             })
-			.then(flattenize)
-			.then(resolve);
+            .then(flattenize)
+            .then(resolve);
 	});
 };
 
@@ -145,9 +145,16 @@ exports.terminate = function(matchingInstances){
             return aws.terminate(i.cred, [i.instanceId]);
         });
 
-		return Promise.all(promise_aws)
-			.then(flattenize)
-			.then(resolve);
+        var promise_do = _.map(insWithCred.do, function(i){
+            return _do.terminate(i.cred, i.instanceId);
+        });
+
+        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
+            .then(function(data){
+                return Promise.all(data);
+            })
+            .then(flattenize)
+            .then(resolve);
 	});
 };
 
@@ -202,10 +209,10 @@ var splitProvidersFromCredentials = function(_keyNames, _credentials){
  *
  * */
 var splitInstancesWithCredentials = function(_instances, _credentials){
-    return _instances.map(function(instance){ //add their credential to each instance
+    return _instances.map(function(instance){ //add the corresponding credential to each instance
         instance.credential = _.find(credentials,{keyName: instance.keyName});
         return instance;
-    }).reduce(function(res, instance){ //return an object grouped by [provider][keyName]
+    }).reduce(function(res, instance){ //return an object grouped by [provider]
         res[instance.credential.provider] = res[instance.credential.provider] || [];
         res[instance.credential.provider].push({instanceId: instance.instanceId, cred: instance.credential});
         return res;

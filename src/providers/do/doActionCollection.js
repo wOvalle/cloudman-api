@@ -22,6 +22,16 @@ doAction.prototype.parseAction = function(data, action, dropletId){
         return;
     };
 
+
+    if(isDelete(data, action)){
+        var ar = new models.actionRequest();
+        ar.action = action;
+        ar.actionProcessed = true;
+        ar.input = dropletId;
+        self.actions.push(ar);
+        return;
+    };
+
     if(!_.get(data, 'action')) return {};
 
     var ar = new models.actionRequest();
@@ -40,6 +50,10 @@ doAction.prototype.parseAction = function(data, action, dropletId){
 
 var isErr = function(data){
     return data && data.id && data.message;
+};
+
+var isDelete = function(data, action){
+    return !data &&  action && action.type === 'delete';
 };
 
 module.exports = doAction;
