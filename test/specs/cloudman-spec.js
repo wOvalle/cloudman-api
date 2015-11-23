@@ -8,7 +8,6 @@ describe('cloudman', function(){
             this.timeout(options.shortTimeOut);
 
             cloudman.status(statusInstances).then(function(res){
-                console.log('res', res);
                 res.should.be.an.Array();
                 res[0].should.be.an.Object()
                 res[0].should.have.property('id');
