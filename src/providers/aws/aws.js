@@ -170,6 +170,31 @@ var handleError = function(err){
     console.log(err.stack);
 };
 
+var validImages = function(){
+    return _.pluck(rawImages, 'slug');
+};
+
+var validRegions = function(){
+    return rawRegions.map(function(reg){return reg.region});
+};
+
+var validTypes = function(){
+    return ["t1.micro", "t2.micro", "t2.small", "m1.small", "t2.medium", "m1.medium", "t2.large", "m1.large", "m1.xlarge", "m2.xlarge"];
+};
+
+var rawRegions = function(){
+    return [{name: "US East (N. Virginia)", region: "us-east-1", endpoint:"ec2.us-east-1.amazonaws.com"},
+        {name: "US West (Oregon)", region:"us-west-2", endpoint:"ec2.us-west-2.amazonaws.com"},
+        {name: "US West (N. California)", region:"us-west-1", endpoint:"ec2.us-west-1.amazonaws.com"},
+        {name: "EU (Ireland)", region:"eu-west-1", endpoint:"ec2.eu-west-1.amazonaws.com"},
+        {name: "EU (Frankfurt)", region:"eu-central-1", endpoint:"ec2.eu-central-1.amazonaws.com"},
+        {name: "Asia Pacific (Singapore)", region:"ap-southeast-1", endpoint:"ec2.ap-southeast-1.amazonaws.com"},
+        {name: "Asia Pacific (Sydney)", region:"ap-southeast-2",	endpoint:"ec2.ap-southeast-2.amazonaws.com"},
+        {name: "Asia Pacific (Tokyo)", region:"ap-northeast-1", endpoint:"ec2.ap-northeast-1.amazonaws.com"},
+        {name: "South America (Sao Paulo)", region:"sa-east-1", endpoint:"ec2.sa-east-1.amazonaws.com"}];
+
+};
+
 module.exports = {
 	status: status,
     stop: stop,

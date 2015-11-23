@@ -48,6 +48,36 @@ doAction.prototype.parseAction = function(data, action, dropletId){
     self.actions.push(ar);
 };
 
+doAction.prototype.parseCreation = function(data){
+    var self = this;
+
+    if(isErr(data)){
+        var ar = new models.actionRequest();
+        ar.action = 'create';
+        ar.actionProcessed = false;
+        ar.err = data.id;
+        ar.errMessage = data.message;
+        ar.input = '';
+        self.actions.push(ar);
+        return;
+    };
+
+    if(!_.get(data, 'droplet')) return {};
+
+    var ar = new models.actionRequest();
+    ar.action = 'create';
+    ar.input = data.droplet.id;
+    ar.actionProcessed = true;
+
+    if(!ar.actionProcessed)
+    {
+        ar.err = data;
+        ar.errMessage =  action + " action couldn't be processed.";
+    }
+
+    self.actions.push(ar);
+};
+
 var isErr = function(data){
     return data && data.id && data.message;
 };

@@ -2,15 +2,6 @@
 	cloudman::
 		description: here we should have a provider-less implementation for the API.
 
-
-	cloudman::create 
-		description: create given instances.
-		
-		input: 	array of matching instances (see src/models/newInstance) to create. 
-		
-		output: array of create request (see src/models/actionRequest) with request resolution.
-
-
 	Assumptions: 
 		- Everything will return promises. When pass = resolve output params. When fail = reject err.
 
@@ -159,6 +150,38 @@ exports.terminate = function(matchingInstances){
 };
 
 /*
+ * cloudman::create
+ *
+ * description:     create new instances in a given cloud provider.
+ *
+ * input:   array of matching instances (see src/models/newInstance) to create.
+ *
+ * output:  array of create request (see src/models/actionRequest) with request resolution.
+ * */
+exports.create = function(newInstance){
+    return new Promise(function(resolve, reject){
+        if(!_.get(newInstance, '[0].keyName')) return reject('credentials parameter is invalid');
+
+        var insWithCred = addCredentialsToProperties(newInstance, credentials);
+
+        var promise_aws = _.map(insWithCred.aws, function(i){
+            return aws.create(i.cred, i.properties);
+        });
+
+        var promise_do = _.map(insWithCred.do, function(i){
+            return _do.create(i.cred, i.properties);
+        });
+
+        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
+            .then(function(data){
+                return Promise.all(data);
+            })
+            .then(flattenize)
+            .then(resolve);
+    });
+};
+
+/*
  * cloudman::flattenize
  *
  * description: 	Helper to flatten arrays.
@@ -215,6 +238,30 @@ var splitInstancesWithCredentials = function(_instances, _credentials){
     }).reduce(function(res, instance){ //return an object grouped by [provider]
         res[instance.credential.provider] = res[instance.credential.provider] || [];
         res[instance.credential.provider].push({instanceId: instance.instanceId, cred: instance.credential});
+        return res;
+    },{});
+};
+
+/*
+ * cloudman::addCredentialsToProperties
+ *
+ * description: 	Receives one array of newInstances {keyName, properties} and one array
+ * 					of credentials and returns an each newinstance with their corresponding
+ * 				    credential grouped by provider.
+ *
+ * input: 	newInstances array.
+ * 			credentials array.
+ *
+ * output: 	filtered array.
+ *
+ * */
+var addCredentialsToProperties = function(_newInstances, _credentials){
+    return _newInstances.map(function(newInstance){ //add the corresponding credential to each instance
+        newInstance.credential = _.find(credentials,{keyName: newInstance.keyName});
+        return newInstance;
+    }).reduce(function(res, newInstance){ //return an object grouped by [provider]
+        res[newInstance.credential.provider] = res[newInstance.credential.provider] || [];
+        res[newInstance.credential.provider].push({cred: newInstance.credential, properties: newInstance.properties});
         return res;
     },{});
 };

@@ -2,12 +2,16 @@ global.should = require('should-promised');
 global.cloudman = require('../src/cloudman');
 global.instances = [
     {
-        keyName: 'main-aws',
+        keyName: 'amazon',
         instanceId: 'i-9fbe3f5b'
     },
     {
-        keyName: 'main-aws',
+        keyName: 'amazon2',
         instanceId: 'i-0ef677ca'
+    },
+    {
+        keyName: 'digitalocean',
+        instanceId: '8912118'
     }
 ];
 
