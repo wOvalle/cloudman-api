@@ -10,6 +10,7 @@ var instanceCollection = function(){
  */
 instanceCollection.prototype.parseResponse = function(data){
     var self = this;
+
     if(!data || _.size(data.droplets) < 1) return {};
 
     _.each(data.droplets, function(droplet){
@@ -20,7 +21,7 @@ instanceCollection.prototype.parseResponse = function(data){
         instance.public_ip_address = _.filter(networks, {type:"public"})[0].ip_address;
 
         instance.id = droplet.id;
-        instance.imageId = droplet.image.id;
+        instance.imageId = droplet.image.slug;
         instance.architecture  = droplet.image.name;
         instance.type = droplet.size_slug;
         instance.zone = droplet.region.slug;

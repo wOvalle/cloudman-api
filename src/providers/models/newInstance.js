@@ -17,5 +17,13 @@
 module.exports = function ()
 {
 	this.keyName = '';
-    this.properties = {};
+    this.properties = new propertiesObj();
+};
+
+var propertiesObj = function(){
+	this.name = '';
+	this.image = '';
+	this.ram = '';
+	this.hd = '';
+	this.region = '';
 };
