@@ -8,9 +8,9 @@
 */
 var 	_ = require('lodash'),
  		Promise = require('bluebird'),
-	 	credentials = require('./cred'),
 	 	aws = require('./providers/aws/aws'),
-        _do = require('./providers/do/do'); //do is reserved in javascript, so _do it is
+        _do = require('./providers/do/do'), //do is reserved in javascript, so _do it is
+        credentials = {};
 
 /*
 * cloudman::status
@@ -26,6 +26,7 @@ var 	_ = require('lodash'),
 exports.status = function(keyNames){
 	return new Promise(function(resolve, reject){
 		if(!keyNames) return reject('keyNames parameter is required');
+        if(!credentials) return reject('credentials is not defined. Please run cloudman.init');
 
         var cred = splitProvidersFromCredentials(keyNames, credentials);
 
@@ -61,6 +62,7 @@ exports.status = function(keyNames){
 exports.start = function(matchingInstances){
 	return new Promise(function(resolve, reject){
         if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
+        if(!credentials) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 		
@@ -95,6 +97,7 @@ exports.start = function(matchingInstances){
 exports.stop = function(matchingInstances){
 	return new Promise(function(resolve, reject){
         if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
+        if(!credentials) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 
@@ -129,6 +132,7 @@ exports.stop = function(matchingInstances){
 exports.terminate = function(matchingInstances){
 	return new Promise(function(resolve, reject){
         if(!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
+        if(!credentials) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 
@@ -161,6 +165,7 @@ exports.terminate = function(matchingInstances){
 exports.create = function(newInstance){
     return new Promise(function(resolve, reject){
         if(!_.get(newInstance, '[0].keyName')) return reject('credentials parameter is invalid');
+        if(!credentials) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = addCredentialsToProperties(newInstance, credentials);
 
@@ -325,4 +330,18 @@ var filterMatchingInstances = function(_cred, _matchingInstances){
     return _.filter(_matchingInstances, function(mi){
         return _credKeyNames.indexOf(mi.keyName) >= 0;
     });
+};
+
+/*
+ * cloudman::init
+ *
+ * description: 	Receives array of credentials and store them.
+ *
+ * input: 	credentials array.
+ *
+ * output: 	none.
+ *
+ * */
+exports.init = function(cred){
+    credentials = cred;
 };
