@@ -96,3 +96,6 @@ node_modules
 
 # Credential Storage
 src/cred.js
+
+#test script
+_app
