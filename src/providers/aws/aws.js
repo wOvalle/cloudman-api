@@ -37,7 +37,7 @@ var status = function (config) {
         if(!config) return reject('config var must have credential information.');
 
         _initEC2(config)
-            .then(_getStatus)
+            .then(function(ec2){return _getStatus(ec2, config);})
             .then(function(res){
                 resolve(res.instances);
             })
@@ -97,14 +97,14 @@ var terminate = function (config, instancesIds) {
 };
 
 /*Internal method, Pending Doc*/
-var _getStatus = function(ec2){
+var _getStatus = function(ec2, config){
     return new Promise(function(resolve, reject){
         var collection = new ec2Collection();
         ec2.describeInstances({}, function (err, data) {
             if (err)
                 return reject(err);
             else {
-                collection.parseReservation(data);
+                collection.parseReservation(data, config);
                 resolve(collection);
             }
         });

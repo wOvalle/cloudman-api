@@ -8,10 +8,9 @@ var instanceCollection = function(){
 /*
     Todo: document this.
 */
-instanceCollection.prototype.parseReservation = function(data){
+instanceCollection.prototype.parseReservation = function(data, config){
     var self = this;
     if(!data || _.size(data.Reservations) < 1 || _.size(data.Reservations[0].Instances) < 1) return {};
-
     _.each(data.Reservations, function(reservation){
         _.each(reservation.Instances, function(ins){
             var instance = new models.instance();
@@ -24,11 +23,11 @@ instanceCollection.prototype.parseReservation = function(data){
             instance.public_ip_address = ins.PublicIpAddress;
             instance.private_dns_name = ins.PrivateDnsName;
             instance.private_ip_address = ins.PrivateIpAddress;
-            instance.os = ins.Platform;
-            instance.stateCode = ins.State.Code;
-            instance.stateName = ins.State.Name;
+            instance.os = ins.Platform || "linux";
+            instance.state = ins.State.Name;
             instance.upSince = ins.LaunchTime;
             instance.tags = ins.Tags;
+            instance.cloudProvider = {provider: config.provider, keyName: config.keyName};
             self.instances.push(instance);
         });
     });

@@ -8,7 +8,7 @@ var instanceCollection = function(){
 /*
  Todo: document this.
  */
-instanceCollection.prototype.parseResponse = function(data){
+instanceCollection.prototype.parseResponse = function(data, config){
     var self = this;
 
     if(!data || _.size(data.droplets) < 1) return {};
@@ -27,6 +27,7 @@ instanceCollection.prototype.parseResponse = function(data){
         instance.zone = droplet.region.slug;
         instance.os = droplet.image.distribution;
         instance.state = droplet.status;
+        instance.cloudProvider = {provider: config.provider, keyName: config.keyName};
         self.instances.push(instance);
     });
 };

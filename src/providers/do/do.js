@@ -9,7 +9,7 @@ var status = function (config) {
         if(!config) return reject('config var must have credential information.');
 
         _init(config)
-            .then(_getStatus)
+            .then(function(_do){ return _getStatus(_do, config);})
             .then(resolve)
             .catch(handleError);
     });
@@ -115,7 +115,7 @@ var _init = function(config){
 };
 
 /*Internal method, Pending Doc*/
-var _getStatus = function(api){
+var _getStatus = function(api, config){
     return new Promise(function(resolve, reject){
         var collection = new doInstanceCollection();
 
@@ -123,7 +123,7 @@ var _getStatus = function(api){
             if (err)
                 return reject(err);
             else {
-                collection.parseResponse(body);
+                collection.parseResponse(body, config);
                 resolve(collection.instances);
             }
         });
