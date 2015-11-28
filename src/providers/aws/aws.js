@@ -196,7 +196,7 @@ var rawRegions = function(){
 };
 
 module.exports = {
-	status: status,
+    status: status,
     stop: stop,
     start: start,
     terminate: terminate
