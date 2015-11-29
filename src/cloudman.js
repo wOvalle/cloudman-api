@@ -208,7 +208,7 @@ exports.validDispositions = function () {
 };
 
 /*
- * cloudman::_validProviders
+ * cloudman::validProviders
  *
  * description:     return valid providers by code.
  *
@@ -216,8 +216,26 @@ exports.validDispositions = function () {
  *
  * output:  valid providers.
  * */
-exports._validProviders = function () {
+exports.validProviders = function () {
     return [{id: 'aws', label: 'Amazon Web Services'}, {id: 'do', label: 'Digital Ocean'}];
+};
+
+/*
+ * cloudman::validAccounts
+ *
+ * description:     return valid accounts in credentials.
+ *
+ * input:   [].
+ *
+ * output:  valid accounts .
+ */
+exports.validAccounts = function () {
+    return credentials.map(function(c){
+        return {
+            id: c.keyName,
+            label: '_key_ (_provider_)'.replace('_key_', c.keyName).replace('_provider_', c.provider)
+        };
+    });
 };
 
 /*
