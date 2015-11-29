@@ -16,15 +16,15 @@ ec2Action.prototype.parseAction = function(data, action){
     if(action === 'stop')//todo: finish this if for start and terminate.
     {
         actionAWS = 'StoppingInstances';
-        possibleStatus = [actionCode.shuttingDown, actionCode.stopping, actionCode.stopped];
+        possibleStatus = [actionCode.shuttingDown, actionCode.stopping];
     }
     else if(action === 'start'){
         actionAWS = 'StartingInstances';
-        possibleStatus = [actionCode.running];
+        possibleStatus = [actionCode.running, actionCode.pending];
     }
     else if(action === 'terminate'){
         actionAWS = 'TerminatingInstances';
-        possibleStatus = [actionCode.terminate];
+        possibleStatus = [actionCode.terminate, actionCode.shuttingDown];
     }
     else return {}; 
 
