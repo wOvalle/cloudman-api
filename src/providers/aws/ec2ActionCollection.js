@@ -48,6 +48,29 @@ ec2Action.prototype.parseAction = function(data, action){
     });
 };
 
+ec2Action.prototype.parseCreation = function(data){
+    var self = this;
+    var  possibleStatus = [actionCode.running, actionCode.pending];
+
+    if(!_.get(data, 'Instances')) return {};
+
+    _.each(data.Instances, function(ins){
+        var ar = new models.actionRequest();
+        ar.action = 'create';
+        ar.input = ins.InstanceId;
+        ar.actionProcessed = possibleStatus.indexOf(ins.State.Code) > -1 ? true : false;
+
+        if(!ar.actionProcessed)
+        {
+            ar.err = data;
+            ar.errMessage =  "create action couldn't be processed. Current State: _currState_."
+                .replace('_currState_', ins.State.Name);
+        }
+
+        self.actions.push(ar);
+    });
+};
+
 var actionCode = {
     pending: 0,
     running: 16,

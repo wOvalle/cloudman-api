@@ -33,13 +33,13 @@ var _initEC2 = function(config){
 
 */
 var status = function (config) {
-	return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
 
         _initEC2(config)
             .then(function(ec2){return _getStatus(ec2, config);})
             .then(function(res){
-                return resolve(res.instances);
+                return resolve(_.filter(res.instances, function(i){return i.state !== 'terminated'}));
             })
             .catch(handleError);
 
@@ -92,6 +92,34 @@ var terminate = function (config, instancesIds) {
                 return _terminateInstances(ec2, instancesIds);
             })
             .then(resolve)
+            .catch(handleError);
+    });
+};
+
+var create = function(config, properties){
+    return new Promise(function(resolve, reject){
+        //todo: Make this properties dynamic
+        properties.keyPair = 'node-sdk-key';
+        properties.count = 1;
+        properties.securityGroups = "default-security-group";
+
+        var awsProperties = parseProperties(properties);
+
+        if(!isValidPropertiesObject(awsProperties)) return reject ('invalid properties object');
+
+        var actionCollection = new ec2ActionCollection();
+
+        _initEC2(config)
+            .then(function(ec2){
+                ec2.runInstances(awsProperties, function(err, data){
+                    if (err)
+                        return reject(err);
+                    else {
+                        actionCollection.parseCreation(data);
+                        return resolve(actionCollection.actions);
+                    }
+                });
+            })
             .catch(handleError);
     });
 };
@@ -162,8 +190,6 @@ var _terminateInstances = function(ec2, InstanceIds){
     });
 };
 
-/*Missing API required create method*/
-
 /*Pending Doc*/
 var handleError = function(err){
     //TODO (maybe): Errors should be logged in here.
@@ -195,9 +221,33 @@ var rawRegions = function(){
 
 };
 
+var isValidPropertiesObject = function (prop){
+    return _.get(prop, 'InstanceType')
+        &&_.get(prop, 'ImageId')
+        &&_.get(prop, 'MinCount')
+        &&_.get(prop, 'MaxCount')
+        &&_.get(prop, 'SecurityGroups')
+        &&_.get(prop, 'KeyName')
+        && validTypes().indexOf(_.get(prop, 'InstanceType')) > -1;
+};
+
+var parseProperties = function (prop){
+    if(!prop.count) prop.count = 1;
+
+    return {
+        ImageId: prop.image,
+        MinCount: prop.count,
+        MaxCount: prop.count,
+        KeyName: prop.keyPair,
+        SecurityGroups: [prop.securityGroups],
+        InstanceType: prop.type
+    };
+};
+
 module.exports = {
     status: status,
     stop: stop,
     start: start,
-    terminate: terminate
+    terminate: terminate,
+    create: create
 };
