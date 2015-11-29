@@ -37,7 +37,7 @@ var status = function (config) {
         if(!config) return reject('config var must have credential information.');
 
         _initEC2(config)
-            .then(function(ec2){return _getStatus(ec2, config);})
+            .then(function(ec2){return _images(ec2, config);})
             .then(function(res){
                 return resolve(_.filter(res.instances, function(i){return i.state !== 'terminated'}));
             })
@@ -173,6 +173,21 @@ var _startInstances = function(ec2, InstanceIds){
     });
 };
 
+var _images = function(ec2){
+    return new Promise(function(resolve, reject){
+        var actionCollection = new ec2ActionCollection();
+
+        ec2.describeImages({}, function (err, data) {
+            if (err)
+                return reject(err);
+            else {
+                console.log(JSON.stringify(data));
+                return resolve(data);
+            }
+        });
+    });
+};
+
 /*Internal method, Pending Doc*/
 var _terminateInstances = function(ec2, InstanceIds){
     return new Promise(function(resolve, reject){
@@ -197,11 +212,32 @@ var handleError = function(err){
 };
 
 var validImages = function(){
-    return _.pluck(rawImages, 'slug');
+    return [
+        {
+            id: 'ami-f0091d91',
+            label: 'Amazon Linux AMI 2015.09.1 (HVM)'
+        },
+        {
+            id: 'ami-4dbf9e7d',
+            label: 'Red Hat Enterprise Linux 7.1 (HVM)'
+        },
+        {
+            id: 'ami-d7450be7',
+            label: 'SUSE Linux Enterprise Server 12 (HVM)'
+        },
+        {
+            id: 'ami-5189a661',
+            label: 'Ubuntu Server 14.04 LTS (HVM)'
+        },
+        {
+            id: 'ami-f8f715cb',
+            label: 'Microsoft Windows Server 2012 R2 Base '
+        }
+    ];
 };
 
 var validRegions = function(){
-    return rawRegions.map(function(reg){return reg.region});
+    return rawRegions().map(function(reg){return reg.region});
 };
 
 var validTypes = function(){
@@ -218,7 +254,6 @@ var rawRegions = function(){
         {name: "Asia Pacific (Sydney)", region:"ap-southeast-2",	endpoint:"ec2.ap-southeast-2.amazonaws.com"},
         {name: "Asia Pacific (Tokyo)", region:"ap-northeast-1", endpoint:"ec2.ap-northeast-1.amazonaws.com"},
         {name: "South America (Sao Paulo)", region:"sa-east-1", endpoint:"ec2.sa-east-1.amazonaws.com"}];
-
 };
 
 var isValidPropertiesObject = function (prop){
@@ -244,10 +279,19 @@ var parseProperties = function (prop){
     };
 };
 
+var getDispositions =  function(){
+    return {
+        type: validTypes(),
+        region: validRegions(),
+        image: validImages()
+    };
+};
+
 module.exports = {
     status: status,
     stop: stop,
     start: start,
     terminate: terminate,
-    create: create
+    create: create,
+    getDispositions: getDispositions
 };

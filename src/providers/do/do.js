@@ -267,15 +267,17 @@ var rawImages = function(){
 };
 
 var validImages = function(){
-  return _.pluck(rawImages, 'slug');
+  return rawImages().map(function(img){
+      return {label: img.distribution + ' ' + img.name, id: img.slug}
+  });
 };
 
 var validRegions = function(){
-    return _.pluck(_.where(rawImages, {id: 13887903}), 'regions');//image 13887903 is available in all regions
+    return _.pluck(_.where(rawImages(), {id: 13887903}), 'regions')[0];//image 13887903 is available in all regions
 };
 
 var imageIsValidInRegion = function (imageId, region){
-    return _.pluck(_.where(rawImages, {slug: imageId}), 'regions').indexOf(region) > 1 ;
+    return _.pluck(_.where(rawImages(), {slug: imageId}), 'regions').indexOf(region) > 1 ;
 };
 
 var isValidPropertiesObject = function (prop){
@@ -286,6 +288,18 @@ var parseProperties = function (prop){
     return {name: prop.name, region: prop.region, size: prop.ram, image: prop.image};
 };
 
+var validTypes = function (prop){
+    return ["512mb", "1gb", "2gb", "4gb", "8gb", "16gb"];
+};
+
+var getDispositions =  function(){
+    return {
+        type: validTypes(),
+        region: validRegions(),
+        image: validImages()
+    };
+};
+
 
 module.exports = {
     status: status,
@@ -293,7 +307,5 @@ module.exports = {
     start: start,
     terminate: terminate,
     create: create,
-    validImages: validImages,
-    validRegions: validRegions,
-    imageIsValidInRegion: imageIsValidInRegion
+    getDispositions: getDispositions
 };

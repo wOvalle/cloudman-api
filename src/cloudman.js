@@ -189,6 +189,38 @@ exports.create = function (newInstance) {
 };
 
 /*
+ * cloudman::validDispositions
+ *
+ * description:     returns the possible values for certain fields in create instances.
+ *
+ * input:   [].
+ *
+ * output:  object with dispositions per provider.
+ * */
+exports.validDispositions = function () {
+    return new Promise(function (resolve, reject) {
+
+        var fields_aws = aws.getDispositions();
+        var fields_do = _do.getDispositions();
+
+        return resolve({aws: fields_aws, do : fields_do});
+    });
+};
+
+/*
+ * cloudman::_validProviders
+ *
+ * description:     return valid providers by code.
+ *
+ * input:   [].
+ *
+ * output:  valid providers.
+ * */
+exports._validProviders = function () {
+    return ['aws', 'do'];
+};
+
+/*
  * cloudman::flattenize
  *
  * description: 	Helper to flatten arrays.
