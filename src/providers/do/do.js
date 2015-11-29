@@ -286,7 +286,7 @@ var isValidPropertiesObject = function (prop){
 };
 
 var parseProperties = function (prop){
-    return {name: prop.name, region: prop.region, size: prop.ram, image: prop.image};
+    return {name: prop.name, region: prop.region, size: prop.type, image: prop.image};
 };
 
 var validTypes = function (prop){
