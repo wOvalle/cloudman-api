@@ -181,7 +181,10 @@ exports.create = function (newInstance) {
                 return Promise.all(data);
             })
             .then(flattenize)
-            .then(resolve);
+            .then(resolve)
+            .catch(function(err){
+                console.log(err);
+            });
     });
 };
 
