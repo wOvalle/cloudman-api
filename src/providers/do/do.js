@@ -77,7 +77,7 @@ var terminate = function (config, dropletId) {
 };
 
 /*
-TODO: missing documentation
+    TODO: missing documentation
 */
 var create = function (config, properties) {
     return new Promise(function(resolve, reject) {
@@ -98,7 +98,6 @@ var create = function (config, properties) {
                     }
                 });
             })
-            .then(resolve)
             .catch(handleError);
     });
 };

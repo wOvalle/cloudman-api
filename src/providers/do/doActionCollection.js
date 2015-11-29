@@ -72,7 +72,7 @@ doAction.prototype.parseCreation = function(data){
     if(!ar.actionProcessed)
     {
         ar.err = data;
-        ar.errMessage =  action + " action couldn't be processed.";
+        ar.errMessage = "create action couldn't be processed.";
     }
 
     self.actions.push(ar);
