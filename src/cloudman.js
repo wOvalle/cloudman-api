@@ -233,7 +233,8 @@ exports.validAccounts = function () {
     return credentials.map(function(c){
         return {
             id: c.keyName,
-            label: '_key_ (_provider_)'.replace('_key_', c.keyName).replace('_provider_', c.provider)
+            label: '_key_ (_provider_)'.replace('_key_', c.keyName).replace('_provider_', c.provider),
+            provider: c.provider
         };
     });
 };
