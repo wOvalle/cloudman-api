@@ -1,4 +1,7 @@
+var cred = require('../../src/cred');
+
 describe('cloudman', function(){
+    cloudman.init(cred);
     describe('status', function(){
         it('should be a promise', function(){
             cloudman.status(statusInstances).should.be.a.Promise();

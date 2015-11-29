@@ -39,7 +39,7 @@ var status = function (config) {
         _initEC2(config)
             .then(function(ec2){return _getStatus(ec2, config);})
             .then(function(res){
-                resolve(res.instances);
+                return resolve(res.instances);
             })
             .catch(handleError);
 
@@ -105,7 +105,7 @@ var _getStatus = function(ec2, config){
                 return reject(err);
             else {
                 collection.parseReservation(data, config);
-                resolve(collection);
+                return resolve(collection);
             }
         });
     });
@@ -122,7 +122,7 @@ var _stopInstances = function(ec2, InstanceIds){
                 return reject(err);
             else {
                 actionCollection.parseAction(data, 'stop');
-                resolve(actionCollection.actions);
+                return resolve(actionCollection.actions);
             }
         });
     });
@@ -139,7 +139,7 @@ var _startInstances = function(ec2, InstanceIds){
                 return reject(err);
             else {
                 actionCollection.parseAction(data, 'start');
-                resolve(actionCollection.actions);
+                return resolve(actionCollection.actions);
             }
         });
     });
@@ -156,7 +156,7 @@ var _terminateInstances = function(ec2, InstanceIds){
                 return reject(err);
             else {
                 actionCollection.parseAction(data, 'terminate');
-                resolve(actionCollection.actions);
+                return resolve(actionCollection.actions);
             }
         });
     });
