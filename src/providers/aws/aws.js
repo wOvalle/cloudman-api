@@ -37,7 +37,7 @@ var status = function (config) {
         if(!config) return reject('config var must have credential information.');
 
         _initEC2(config)
-            .then(function(ec2){return _images(ec2, config);})
+            .then(function(ec2){return _getStatus(ec2, config);})
             .then(function(res){
                 return resolve(_.filter(res.instances, function(i){return i.state !== 'terminated'}));
             })
