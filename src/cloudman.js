@@ -217,7 +217,7 @@ exports.validDispositions = function () {
  * output:  valid providers.
  * */
 exports._validProviders = function () {
-    return ['aws', 'do'];
+    return [{id: 'aws', label: 'Amazon Web Services'}, {id: 'do', label: 'Digital Ocean'}];
 };
 
 /*
