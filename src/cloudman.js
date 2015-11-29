@@ -197,7 +197,7 @@ exports.create = function (newInstance) {
  * */
 var flattenize = function (data) {
     return new Promise(function (resolve, reject) {
-        resolve(_.flatten(data));
+        return resolve(_.flatten(data));
     });
 };
 /*
