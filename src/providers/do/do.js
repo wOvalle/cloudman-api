@@ -66,7 +66,7 @@ var terminate = function (config, dropletId) {
                         return reject(err);
                     else {
                         actionCollection.parseAction(body, {type: 'delete'}, dropletId);
-                        resolve(actionCollection.actions);
+                        return resolve(actionCollection.actions);
                     }
 
                 });
@@ -94,8 +94,7 @@ var create = function (config, properties) {
                         return reject(err);
                     else {
                         actionCollection.parseCreation(body);
-                        console.log(actionCollection.actions);
-                        resolve(actionCollection.actions);
+                        return resolve(actionCollection.actions);
                     }
                 });
             })
@@ -110,7 +109,7 @@ var _init = function(config){
     if (!config.token) return reject('token is required');
 
     return new Promise(function(resolve, reject){
-        resolve(new DigitalOcean(config.token, config.pageSize));
+        return resolve(new DigitalOcean(config.token, config.pageSize));
     });
 };
 
@@ -124,7 +123,7 @@ var _getStatus = function(api, config){
                 return reject(err);
             else {
                 collection.parseResponse(body, config);
-                resolve(collection.instances);
+                return resolve(collection.instances);
             }
         });
     });
@@ -140,7 +139,7 @@ var _requestAction = function(api, dropletId, doAction, cmanAction){
                 return reject(err);
             else {
                 actionCollection.parseAction(body, cmanAction, dropletId);
-                resolve(actionCollection.actions);
+                return resolve(actionCollection.actions);
             };
         });
     });
