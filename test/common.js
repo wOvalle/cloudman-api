@@ -22,3 +22,4 @@ global.options = {
 };
 
 global.statusInstances = global.instances.map(function (instance){return instance.keyName});
+
