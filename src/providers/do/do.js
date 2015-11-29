@@ -273,7 +273,8 @@ var validImages = function(){
 };
 
 var validRegions = function(){
-    return _.pluck(_.where(rawImages(), {id: 13887903}), 'regions')[0];//image 13887903 is available in all regions
+    return _.pluck(_.where(rawImages(), {id: 13887903}), 'regions')[0]
+        .map(function(it){return {id: it, label: it}});//image 13887903 is available in all regions
 };
 
 var imageIsValidInRegion = function (imageId, region){
@@ -289,7 +290,8 @@ var parseProperties = function (prop){
 };
 
 var validTypes = function (prop){
-    return ["512mb", "1gb", "2gb", "4gb", "8gb", "16gb"];
+    return ["512mb", "1gb", "2gb", "4gb", "8gb", "16gb"]
+        .map(function(it){return {id: it, label: it}});
 };
 
 var getDispositions =  function(){

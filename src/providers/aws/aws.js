@@ -237,11 +237,14 @@ var validImages = function(){
 };
 
 var validRegions = function(){
-    return rawRegions().map(function(reg){return reg.region});
+    return rawRegions().map(function(it){return {id: it.region, label: it.name}});
 };
 
 var validTypes = function(){
-    return ["t1.micro", "t2.micro", "t2.small", "m1.small", "t2.medium", "m1.medium", "t2.large", "m1.large", "m1.xlarge", "m2.xlarge"];
+    return ["t1.micro", "t2.micro", "t2.small", "m1.small", "t2.medium", "m1.medium", "t2.large", "m1.large", "m1.xlarge", "m2.xlarge"]
+        .map(function(it){
+            return {id: it, label: it};
+        });
 };
 
 var rawRegions = function(){
