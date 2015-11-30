@@ -265,8 +265,7 @@ var isValidPropertiesObject = function (prop){
         &&_.get(prop, 'MinCount')
         &&_.get(prop, 'MaxCount')
         &&_.get(prop, 'SecurityGroups')
-        &&_.get(prop, 'KeyName')
-        && validTypes().indexOf(_.get(prop, 'InstanceType')) > -1;
+        &&_.get(prop, 'KeyName');
 };
 
 var parseProperties = function (prop){
