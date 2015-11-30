@@ -41,7 +41,7 @@ var status = function (config) {
             .then(function(res){
                 return resolve(_.filter(res.instances, function(i){return i.state !== 'terminated'}));
             })
-            .catch(handleError);
+            .catch(reject);
 
     });
 };
@@ -59,7 +59,7 @@ var stop = function (config, instancesIds) {
                 return _stopInstances(ec2, instancesIds);
             })
             .then(resolve)
-            .catch(handleError);
+            .catch(reject);
     });
 };
 
@@ -75,7 +75,7 @@ var start = function (config, instancesIds) {
                 return _startInstances(ec2, instancesIds);
             })
             .then(resolve)
-            .catch(handleError);
+            .catch(reject);
     });
 };
 
@@ -92,7 +92,7 @@ var terminate = function (config, instancesIds) {
                 return _terminateInstances(ec2, instancesIds);
             })
             .then(resolve)
-            .catch(handleError);
+            .catch(reject);
     });
 };
 
@@ -120,7 +120,7 @@ var create = function(config, properties){
                     }
                 });
             })
-            .catch(handleError);
+            .catch(reject);
     });
 };
 

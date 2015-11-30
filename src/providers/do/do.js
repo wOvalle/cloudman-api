@@ -11,7 +11,7 @@ var status = function (config) {
         _init(config)
             .then(function(_do){ return _getStatus(_do, config);})
             .then(resolve)
-            .catch(handleError);
+            .catch(reject);
     });
 };
 
@@ -29,7 +29,7 @@ var stop = function (config, dropletId) {
                 return _requestAction(api, dropletId, doAction, 'stop');
             })
             .then(resolve)
-            .catch(handleError);
+            .catch(reject);
     });
 };
 
@@ -47,7 +47,7 @@ var start = function (config, dropletId) {
                 return _requestAction(api, dropletId, doAction, 'start');
             })
             .then(resolve)
-            .catch(handleError);
+            .catch(reject);
     });
 };
 
@@ -71,7 +71,7 @@ var terminate = function (config, dropletId) {
 
                 });
             })
-            .catch(handleError);
+            .catch(reject);
 
     });
 };
@@ -98,7 +98,7 @@ var create = function (config, properties) {
                     }
                 });
             })
-            .catch(handleError);
+            .catch(reject);
     });
 };
 
