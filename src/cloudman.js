@@ -324,66 +324,6 @@ var addCredentialsToProperties = function (_newInstances, _credentials) {
     }, {});
 };
 
-
-/*DEPRECATED METHODS*/
-/*
- * cloudman::setCredentials
- *
- * description:     Receives one array of keyNames and one array of credentials
- *                  and returns all the credentials with the given keyNames.
- *
- * input:   keyNames array
- *          credentials array.
- *
- * output: 	filtered array.
- *
- * */
-var setCredentials = function (_keyNames, _credentials) {
-    return _.filter(_credentials, function (cred) {
-        return _keyNames.indexOf(cred.keyName) >= 0;
-    });
-};
-
-/*
- * cloudman::filterProvider
- *
- * description:     Receives one array of credentials and one provider and
- *                  returns all the credentials for the given provider.
- *
- * input:   keyNames array
- *          credentials array.
- *
- * output:  filtered array.
- *
- * */
-var filterProvider = function (_cred, _provider) {
-    return _.filter(_cred, function (cr) {
-        return cr.provider === _provider;
-    });
-};
-
-/*
- * cloudman::filterMatchingInstances
- *
- * description:     Receives one array of credentials and one array of MatchingInstances and
- *                  returns all the MatchingInstances for these credentials.
- *
- * input:   credentials array.
- *          matchingInstances array.
- *
- * output: 	filtered array.
- *
- * */
-var filterMatchingInstances = function (_cred, _matchingInstances) {
-    var _credKeyNames = _cred.map(function (cr) {
-        return cr.keyName;
-    });
-
-    return _.filter(_matchingInstances, function (mi) {
-        return _credKeyNames.indexOf(mi.keyName) >= 0;
-    });
-};
-
 /*
  * cloudman::init
  *
