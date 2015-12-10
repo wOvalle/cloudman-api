@@ -2,6 +2,7 @@ var cman = require('./src/providers/aws/aws');
 var cman_do = require('./src/providers/do/do');
 var cloudman = require('./src/cloudman');
 var cred = require('./src/cred');
+var onebula = require('./src/providers/on/on');
 var beautify = require('js-beautify').js_beautify;
 /*test config*/
 var instances = [{
@@ -26,7 +27,7 @@ var instances = [{
     }
 ];
 
-cloudman.init(cred);
+//cloudman.init(cred);
 //var x = cloudman.splitInstancesWithCredentials(instances, cred);
 //console.log(beautify(JSON.stringify(x)));
 //stopIntances()
@@ -38,7 +39,7 @@ cloudman.init(cred);
 ////cloudman.create([{keyName: 'digitalocean', properties: prop}]).then(function(res){console.log(res)});
 //getStatus();
 //cloudman.validDispositions().then(function(res){console.log(JSON.stringify(res))})
-console.log(cloudman.validProviders());
+//console.log(cloudman.validProviders());
 //
 //var propA ={image:'ami-f0091d91', type: 't2.micro'};
 //cloudman.create([{keyName: 'amazon', properties: propA}, {keyName: 'digitalocean', properties: prop}]).then(function(res){console.log(res)});
@@ -63,6 +64,9 @@ console.log(cloudman.validProviders());
 //)}, 50000);
 //})
 //});
+
+
+onebula.status(cred[3]).then(function(data){console.log(data)});
 
 function getStatus() {
     cloudman.init(cred);
