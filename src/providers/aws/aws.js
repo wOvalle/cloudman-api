@@ -297,8 +297,7 @@ var parseProperties = function (prop){
         MaxCount: prop.count,
         KeyName: prop.keyPair,
         SecurityGroups: [prop.securityGroups],
-        InstanceType: prop.type,
-        Tags: [{Key: 'Name', Value: prop.name}]
+        InstanceType: prop.type
     };
 };
 
