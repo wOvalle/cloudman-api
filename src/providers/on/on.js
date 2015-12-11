@@ -72,6 +72,8 @@ var _requestAction = function(one, id, actionOn, actionCloudman){
     return new Promise(function(resolve, reject){
         var actionCollection = new onActionCollection();
 
+        if(_.isString(id)) id = _.parseInt(id);
+
         one.getVM(id).action(actionOn, function(err, data){
             if(err) actionCollection.parseAction(data, actionCloudman, id,  err);//return reject(err);
             else actionCollection.parseAction(data, actionCloudman, id);

@@ -10,6 +10,7 @@ var _ = require('lodash'),
     Promise = require('bluebird'),
     aws = require('./providers/aws/aws'),
     _do = require('./providers/do/do'), //do is reserved in javascript, so _do it is
+    _on = require('./providers/on/on'),//on is reserved in javascript, so _on it is
     credentials = {};
 
 /*
@@ -26,7 +27,7 @@ var _ = require('lodash'),
 exports.status = function (keyNames) {
     return new Promise(function (resolve, reject) {
         if (!keyNames) return reject('keyNames parameter is required');
-        if (!credentials) return reject('credentials is not defined. Please run cloudman.init');
+        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');
 
         var cred = splitProvidersFromCredentials(keyNames, credentials);
 
@@ -38,7 +39,11 @@ exports.status = function (keyNames) {
             return _do.status(cr);
         });
 
-        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
+        var promise_on = _.map(cred.on, function (cr) {
+            return _on.status(cr);
+        });
+
+        return flattenize([promise_aws, promise_do, promise_on])//we have to do flattenize first because Array.map returns an array
             .then(function (data) {
                 return Promise.all(data);
             })
@@ -61,7 +66,7 @@ exports.status = function (keyNames) {
 exports.start = function (matchingInstances) {
     return new Promise(function (resolve, reject) {
         if (!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
-        if (!credentials) return reject('credentials is not defined. Please run cloudman.init');
+        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 
@@ -73,7 +78,11 @@ exports.start = function (matchingInstances) {
             return _do.start(i.cred, i.instanceId);
         });
 
-        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
+        var promise_on = _.map(insWithCred.on, function (i) {
+            return _on.start(i.cred, i.instanceId);
+        });
+
+        return flattenize([promise_aws, promise_do, promise_on])//we have to do flattenize first because Array.map returns an array
             .then(function (data) {
                 return Promise.all(data);
             })
@@ -96,7 +105,7 @@ exports.start = function (matchingInstances) {
 exports.stop = function (matchingInstances) {
     return new Promise(function (resolve, reject) {
         if (!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
-        if (!credentials) return reject('credentials is not defined. Please run cloudman.init');
+        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 
@@ -108,7 +117,11 @@ exports.stop = function (matchingInstances) {
             return _do.stop(i.cred, i.instanceId);
         });
 
-        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
+        var promise_on = _.map(insWithCred.on, function (i) {
+            return _on.stop(i.cred, i.instanceId);
+        });
+
+        return flattenize([promise_aws, promise_do, promise_on])//we have to do flattenize first because Array.map returns an array
             .then(function (data) {
                 return Promise.all(data);
             })
@@ -131,7 +144,7 @@ exports.stop = function (matchingInstances) {
 exports.terminate = function (matchingInstances) {
     return new Promise(function (resolve, reject) {
         if (!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
-        if (!credentials) return reject('credentials is not defined. Please run cloudman.init');
+        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 
@@ -143,7 +156,11 @@ exports.terminate = function (matchingInstances) {
             return _do.terminate(i.cred, i.instanceId);
         });
 
-        return flattenize([promise_aws, promise_do])//we have to do flattenize first because Array.map returns an array
+        var promise_on = _.map(insWithCred.on, function (i) {
+            return _on.terminate(i.cred, i.instanceId);
+        });
+
+        return flattenize([promise_aws, promise_do, promise_on])//we have to do flattenize first because Array.map returns an array
             .then(function (data) {
                 return Promise.all(data);
             })
@@ -164,7 +181,7 @@ exports.terminate = function (matchingInstances) {
 exports.create = function (newInstance) {
     return new Promise(function (resolve, reject) {
         if (!_.get(newInstance, '[0].keyName')) return reject('credentials parameter is invalid');
-        if (!credentials) return reject('credentials is not defined. Please run cloudman.init');
+        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = addCredentialsToProperties(newInstance, credentials);
 
