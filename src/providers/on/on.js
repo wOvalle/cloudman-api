@@ -1,7 +1,8 @@
 var Promise = require('bluebird'),
     _ = require('lodash'),
     OpenNebula = require('opennebula'),
-    onInstanceCollection = require('./onInstanceCollection');
+    onInstanceCollection = require('./onInstanceCollection'),
+    onActionCollection = require('./onActionCollection');
 
 exports.status = function(config) {
     return new Promise(function(resolve, reject) {
@@ -18,6 +19,65 @@ exports.status = function(config) {
                 });
             })
             .catch(reject);
+    });
+};
+
+exports.stop = function(config, id) {
+    return new Promise(function(resolve, reject) {
+        if (!config) return reject('config var must have credential information.');
+
+        var actionOn = 'stop';
+
+        exports._init(config)
+            .then(function (one) {
+                return _requestAction(one, id, actionOn, 'stop');
+            })
+            .then(resolve)
+            .catch(reject);
+    });
+};
+
+exports.start = function(config, id) {
+    return new Promise(function(resolve, reject) {
+        if (!config) return reject('config var must have credential information.');
+
+        var actionOn = 'resume';
+
+        exports._init(config)
+            .then(function (one) {
+                return _requestAction(one, id, actionOn, 'start');
+            })
+            .then(resolve)
+            .catch(reject);
+    });
+};
+
+exports.terminate = function(config, id) {
+    return new Promise(function(resolve, reject) {
+        if (!config) return reject('config var must have credential information.');
+
+        var actionOn = 'delete';
+
+        exports._init(config)
+            .then(function (one) {
+                return _requestAction(one, id, actionOn, 'terminate');
+            })
+            .then(resolve)
+            .catch(reject);
+    });
+};
+
+
+var _requestAction = function(one, id, actionOn, actionCloudman){
+    return new Promise(function(resolve, reject){
+        var actionCollection = new onActionCollection();
+
+        one.getVM(id).action(actionOn, function(err, data){
+            if(err) actionCollection.parseAction(data, actionCloudman, id,  err);//return reject(err);
+            else actionCollection.parseAction(data, actionCloudman, id);
+
+            return resolve(actionCollection.actions);
+        });
     });
 };
 
