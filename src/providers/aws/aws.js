@@ -124,6 +124,9 @@ var create = function(config, properties){
                         if(!act.actionProcessed)
                             return;
 
+                        if(!properties.name)
+                            properties.name = 'Powered by Cloudman ' + (new Date()).getTime();
+
                         var ids = [act.input];//set this for various machines, hardcored for now
                         var params = {
                             Resources: ids,
