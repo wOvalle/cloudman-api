@@ -24,14 +24,14 @@ var _initEC2 = function(config){
 };
 
 /*Pending Doc.
-    
-    Input: config {
-        key: Aws key.
-        secret: Aws secret 
-        region: Aws region.
-    }
 
-*/
+ Input: config {
+ key: Aws key.
+ secret: Aws secret
+ region: Aws region.
+ }
+
+ */
 var status = function (config) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
@@ -47,8 +47,8 @@ var status = function (config) {
 };
 
 /*
-    TODO: missing documentation
-*/
+ TODO: missing documentation
+ */
 var stop = function (config, instancesIds) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
@@ -64,8 +64,8 @@ var stop = function (config, instancesIds) {
 };
 
 /*
-    TODO: missing documentation
-*/
+ TODO: missing documentation
+ */
 var start = function (config, instancesIds) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
@@ -80,8 +80,8 @@ var start = function (config, instancesIds) {
 };
 
 /*
-    TODO: missing documentation
-*/
+ TODO: missing documentation
+ */
 var terminate = function (config, instancesIds) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
@@ -116,8 +116,28 @@ var create = function(config, properties){
                         return reject(err);
                     else {
                         actionCollection.parseCreation(data);
-                        return resolve(actionCollection.actions);
                     }
+
+                    /*Tried to do this in other then but since ec2.runInstances is async, it was entering second then first*/
+                    _.each(actionCollection.actions, function(act){
+                        //If creation threw an error, return; Else, create tags.
+                        if(!act.actionProcessed)
+                            return;
+
+                        var ids = [act.input];//set this for various machines, hardcored for now
+                        var params = {
+                            Resources: ids,
+                            Tags:[{
+                                Key: 'Name',
+                                Value: properties.name
+                            }]
+                        };
+
+                        ec2.createTags(params, function(err, data){
+                            if (err) return reject(err);
+                            else return resolve(actionCollection.actions);
+                        });
+                    });
                 });
             })
             .catch(reject);
