@@ -20,11 +20,10 @@ exports.status = function(config) {
             .then(function (one) {
                 one.getVMs(function (err, data) {
                     if(err) return reject (err);
-                    collection.parseResponse(data);
+                    collection.parseResponse(data, config);
                     return resolve(collection.instances);
                 });
             })
-            //.then(resolve)
             .catch(reject);
     });
 };
