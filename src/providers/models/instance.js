@@ -9,6 +9,7 @@
 module.exports = function ()
 {
 	this.id = '';
+	this.name = '';
     this.imageId = '';
 	this.architecture  = '';
 	this.type = '';

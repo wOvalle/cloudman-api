@@ -5,21 +5,14 @@ var cred = require('./src/cred');
 var onebula = require('./src/providers/on/on');
 var beautify = require('js-beautify').js_beautify;
 /*test config*/
-var instances = [{
-    keyName: 'amazon',
-    instanceId: 'i-9fbe3f5b'
-    },
+var instances = [
     {
         keyName: 'amazon',
-        instanceId: 'i-0ef677ca'
+        instanceId: 'i-9fbe3f5b'
     },
     {
-        keyName: 'digitalocean',
-        instanceId: '8912118'
-    },
-    {
-        keyName: 'amazon2',
-        instanceId: 'i-0ef677ca'
+        keyName: 'opennebula',
+        instanceId: '1'
     },
     {
         keyName: 'digitalocean',
@@ -27,14 +20,16 @@ var instances = [{
     }
 ];
 
-//cloudman.init(cred);
+cloudman.init(cred);
 //var x = cloudman.splitInstancesWithCredentials(instances, cred);
 //console.log(beautify(JSON.stringify(x)));
 //stopIntances()
 //console.log(cloudman.splitProvidersFromCredentials(instances.map(function(i){return i.keyName}), cred));
 //stopIntances([instances[0], instances[2]]);
 //getStatus();
-//cloudman.start(['a', 'b']).then(console.log(0));
+cloudman.start([instances[1]]).then(function (data) {
+    console.log(data)
+});
 //var prop ={name: 'testApi', image:'ubuntu-15-10-x64', ram:"512mb", region: "nyc1", hd: "20"};
 ////cloudman.create([{keyName: 'digitalocean', properties: prop}]).then(function(res){console.log(res)});
 //getStatus();
@@ -66,7 +61,8 @@ var instances = [{
 //});
 
 
-onebula.status(cred[3]).then(function(data){console.log(data)});
+//onebula.status(cred[3]).then(function(data){console.log(data)});
+//onebula.terminate(cred[3], 3).then(function(data){console.log('h', data)});
 
 function getStatus() {
     cloudman.init(cred);
