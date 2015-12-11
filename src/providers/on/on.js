@@ -3,13 +3,6 @@ var Promise = require('bluebird'),
     OpenNebula = require('opennebula'),
     onInstanceCollection = require('./onInstanceCollection');
 
-exports.lookupInstances = function() {
-    var one = new OpenNebula('oneadmin' + ':' + 'opennebula', 'http://localhost:2633/RPC2');
-    one.getVMs(function (err, data) {
-        console.log(JSON.stringify(data));
-    });
-};
-
 exports.status = function(config) {
     return new Promise(function(resolve, reject) {
         if (!config) return reject('config var must have credential information.');
