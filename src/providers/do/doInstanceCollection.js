@@ -19,7 +19,7 @@ instanceCollection.prototype.parseResponse = function(data, config){
         var networks = droplet.networks.v4;
         instance.private_ip_address = _.filter(networks, {type:"private"})[0].ip_address;
         instance.public_ip_address = _.filter(networks, {type:"public"})[0].ip_address;
-
+        instance.name = droplet.name;
         instance.id = droplet.id;
         instance.imageId = droplet.image.slug;
         instance.architecture  = droplet.image.name;

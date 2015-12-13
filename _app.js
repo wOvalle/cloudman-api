@@ -26,10 +26,10 @@ cloudman.init(cred);
 //stopIntances()
 //console.log(cloudman.splitProvidersFromCredentials(instances.map(function(i){return i.keyName}), cred));
 //stopIntances([instances[0], instances[2]]);
-//getStatus();
-cloudman.start([instances[1]]).then(function (data) {
-    console.log(data)
-});
+getStatus();
+//cloudman.start([instances[1]]).then(function (data) {
+//    console.log(data)
+//});
 //var prop ={name: 'testApi', image:'ubuntu-15-10-x64', ram:"512mb", region: "nyc1", hd: "20"};
 ////cloudman.create([{keyName: 'digitalocean', properties: prop}]).then(function(res){console.log(res)});
 //getStatus();
