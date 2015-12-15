@@ -10,10 +10,10 @@ var doAction = function(){
  */
 doAction.prototype.parseAction = function(data, action, dropletId){
     var self = this;
+    var ar = new models.actionRequest();
+    ar.action = action;
 
     if(isErr(data)){
-        var ar = new models.actionRequest();
-        ar.action = action.type;
         ar.actionProcessed = false;
         ar.err = data.id;
         ar.errMessage = data.message;
@@ -24,8 +24,6 @@ doAction.prototype.parseAction = function(data, action, dropletId){
 
 
     if(isDelete(data, action)){
-        var ar = new models.actionRequest();
-        ar.action = action.type;
         ar.actionProcessed = true;
         ar.input = dropletId;
         self.actions.push(ar);
@@ -34,8 +32,6 @@ doAction.prototype.parseAction = function(data, action, dropletId){
 
     if(!_.get(data, 'action')) return {};
 
-    var ar = new models.actionRequest();
-    ar.action = action.type;
     ar.input = dropletId;
     ar.actionProcessed = data.action.status === 'in-progress'? true : false;
 

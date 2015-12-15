@@ -8,7 +8,7 @@ var beautify = require('js-beautify').js_beautify;
 var instances = [
     {
         keyName: 'amazon',
-        instanceId: 'i-9fbe3f5b'
+        instanceId: 'i-67ebdca3'
     },
     {
         keyName: 'opennebula',
@@ -16,7 +16,7 @@ var instances = [
     },
     {
         keyName: 'digitalocean',
-        instanceId: '8963879'
+        instanceId: '9314336'
     }
 ];
 
@@ -25,8 +25,8 @@ cloudman.init(cred);
 //console.log(beautify(JSON.stringify(x)));
 //stopIntances()
 //console.log(cloudman.splitProvidersFromCredentials(instances.map(function(i){return i.keyName}), cred));
-//stopIntances([instances[0], instances[2]]);
-getStatus();
+stopIntances([instances[2]]);
+//getStatus();
 //cloudman.start([instances[1]]).then(function (data) {
 //    console.log(data)
 //});
