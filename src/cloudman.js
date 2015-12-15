@@ -87,7 +87,8 @@ exports.start = function (matchingInstances) {
                 return Promise.all(data);
             })
             .then(flattenize)
-            .then(resolve);
+            .then(resolve)
+            .catch(reject);
     });
 };
 
@@ -126,7 +127,8 @@ exports.stop = function (matchingInstances) {
                 return Promise.all(data);
             })
             .then(flattenize)
-            .then(resolve);
+            .then(resolve)
+            .catch(reject);
     });
 };
 
@@ -165,7 +167,8 @@ exports.terminate = function (matchingInstances) {
                 return Promise.all(data);
             })
             .then(flattenize)
-            .then(resolve);
+            .then(resolve)
+            .catch(reject);
     });
 };
 
@@ -199,9 +202,7 @@ exports.create = function (newInstance) {
             })
             .then(flattenize)
             .then(resolve)
-            .catch(function(err){
-                console.log(err);
-            });
+            .catch(reject);
     });
 };
 
