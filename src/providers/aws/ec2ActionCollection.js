@@ -24,7 +24,7 @@ ec2Action.prototype.parseAction = function(data, action){
     }
     else if(action === 'terminate'){
         actionAWS = 'TerminatingInstances';
-        possibleStatus = [actionCode.terminate, actionCode.shuttingDown];
+        possibleStatus = [actionCode.terminated, actionCode.shuttingDown];
     }
     else return {}; 
 
