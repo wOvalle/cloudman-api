@@ -25,8 +25,8 @@ cloudman.init(cred);
 //console.log(beautify(JSON.stringify(x)));
 //stopIntances()
 //console.log(cloudman.splitProvidersFromCredentials(instances.map(function(i){return i.keyName}), cred));
-stopIntances([instances[2]]);
-//getStatus();
+//stopIntances([instances[2]]);
+getStatus();
 //cloudman.start([instances[1]]).then(function (data) {
 //    console.log(data)
 //});

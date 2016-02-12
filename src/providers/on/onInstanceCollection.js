@@ -11,16 +11,16 @@ instanceCollection.prototype.parseResponse = function(data, config){
 
     _.each(data, function(vm){
         var instance = new models.instance();
-        instance.private_ip_address = vm.TEMPLATE.NIC.IP;
-        instance.private_dns_name = vm.HISTORY_RECORDS.HISTORY.HOSTNAME;
+        instance.private_ip_address = _.get(vm, 'TEMPLATE.NIC.IP') || 'unknown';
+        instance.private_dns_name = _.get(vm, 'HISTORY_RECORDS.HISTORY.HOSTNAME') || 'unknown';
         instance.name = vm.NAME;
         instance.id = vm.ID;
-        instance.imageId = vm.TEMPLATE.DISK.IMAGE;
+        instance.imageId = _lo.get(vm, 'TEMPLATE.DISK.IMAGE') || 'unknown';
 
         instance.type = "Template:" + vm.TEMPLATE.TEMPLATE_ID;
         instance.zone = vm.UNAME;
-        instance.os = vm.TEMPLATE.DISK.IMAGE;
-        instance.state = getStateByCode(vm.STATE);
+        instance.os = _.get(vm, 'TEMPLATE.DISK.IMAGE') || 'unknown';
+        instance.state = getStateByCode(vm.STATE) || 'unknown';
         instance.cloudProvider = {provider: config.provider, keyName: config.keyName};
         self.instances.push(instance);
     });
