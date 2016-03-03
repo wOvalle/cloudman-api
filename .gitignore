@@ -99,3 +99,7 @@ src/cred.js
 
 #test script
 _app.js
+
+#logs
+debug.log
+exceptions.log

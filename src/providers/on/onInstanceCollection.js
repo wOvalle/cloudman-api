@@ -15,7 +15,7 @@ instanceCollection.prototype.parseResponse = function(data, config){
         instance.private_dns_name = _.get(vm, 'HISTORY_RECORDS.HISTORY.HOSTNAME') || 'unknown';
         instance.name = vm.NAME;
         instance.id = vm.ID;
-        instance.imageId = _lo.get(vm, 'TEMPLATE.DISK.IMAGE') || 'unknown';
+        instance.imageId = _.get(vm, 'TEMPLATE.DISK.IMAGE') || 'unknown';
 
         instance.type = "Template:" + vm.TEMPLATE.TEMPLATE_ID;
         instance.zone = vm.UNAME;

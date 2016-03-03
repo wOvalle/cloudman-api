@@ -11,7 +11,7 @@ var _ = require('lodash'),
     aws = require('./providers/aws/aws'),
     _do = require('./providers/do/do'), //do is reserved in javascript, so _do it is
     _on = require('./providers/on/on'),//on is reserved in javascript, so _on it is
-    credentials = {};
+    logger = require('./logger');
 
 /*
  * cloudman::status
@@ -48,7 +48,8 @@ exports.status = function (keyNames) {
                 return Promise.all(data);
             })
             .then(flattenize)
-            .then(resolve);
+            .then(resolve)
+            .catch(_handleError.bind(null,reject));
     });
 };
 
@@ -66,7 +67,7 @@ exports.status = function (keyNames) {
 exports.start = function (matchingInstances) {
     return new Promise(function (resolve, reject) {
         if (!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
-        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');
+        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');s
 
         var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 
@@ -88,7 +89,7 @@ exports.start = function (matchingInstances) {
             })
             .then(flattenize)
             .then(resolve)
-            .catch(reject);
+            .catch(_handleError.bind(null,reject));
     });
 };
 
@@ -128,7 +129,7 @@ exports.stop = function (matchingInstances) {
             })
             .then(flattenize)
             .then(resolve)
-            .catch(reject);
+            .catch(_handleError.bind(null,reject));
     });
 };
 
@@ -168,7 +169,7 @@ exports.terminate = function (matchingInstances) {
             })
             .then(flattenize)
             .then(resolve)
-            .catch(reject);
+            .catch(_handleError.bind(null,reject));
     });
 };
 
@@ -202,7 +203,7 @@ exports.create = function (newInstance) {
             })
             .then(flattenize)
             .then(resolve)
-            .catch(reject);
+            .catch(_handleError.bind(null,reject));
     });
 };
 
@@ -235,7 +236,10 @@ exports.validDispositions = function () {
  * output:  valid providers.
  * */
 exports.validProviders = function () {
-    return [{id: 'aws', label: 'Amazon Web Services'}, {id: 'do', label: 'Digital Ocean'}];
+    return [
+        {id: 'aws', label: 'Amazon Web Services'},
+        {id: 'do', label: 'Digital Ocean'}
+    ];
 };
 
 /*
@@ -354,4 +358,9 @@ var addCredentialsToProperties = function (_newInstances, _credentials) {
  * */
 exports.init = function (cred) {
     credentials = cred;
+};
+
+var _handleError = function(reject, err){
+    logger.error('There is an error in the platform at ' + getCurrentTime() + '.\nErr:' + err.message, {meta: err});
+    reject(err);
 };
