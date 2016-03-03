@@ -1,7 +1,8 @@
 var Promise = require('bluebird'),
     _ = require('lodash'),
     ec2Collection = require('./ec2InstanceCollection'),
-    ec2ActionCollection = require('./ec2ActionCollection');
+    ec2ActionCollection = require('./ec2ActionCollection'),
+    providerName = 'aws'
 
 /*Internal method, Pending Doc*/
 var _initEC2 = function(config){

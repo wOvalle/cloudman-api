@@ -2,7 +2,8 @@ var Promise = require('bluebird'),
     _ = require('lodash'),
     OpenNebula = require('opennebula'),
     onInstanceCollection = require('./onInstanceCollection'),
-    onActionCollection = require('./onActionCollection');
+    onActionCollection = require('./onActionCollection'),
+    providerName = 'on';
 
 exports.status = function(config) {
     return new Promise(function(resolve, reject) {

@@ -1,6 +1,6 @@
 var cman = require('./src/providers/aws/aws');
 var cman_do = require('./src/providers/do/do');
-var cloudman = require('./src/cloudman');
+var cloudman = require('./src/cloudman-profiler');
 var cred = require('./src/cred');
 var onebula = require('./src/providers/on/on');
 var beautify = require('js-beautify').js_beautify;
