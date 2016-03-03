@@ -361,6 +361,6 @@ exports.init = function (cred) {
 };
 
 var _handleError = function(reject, err){
-    logger.error('There is an error in the platform at ' + getCurrentTime() + '.\nErr:' + err.message, {meta: err});
+    //logger.error('There is an error in the platform at ' + getCurrentTime() + '.\nErr:' + err.message, {meta: err});
     reject(err);
 };

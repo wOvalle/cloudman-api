@@ -2,87 +2,84 @@ var Promise = require('bluebird'),
     _ = require('lodash'),
     DigitalOcean = require('do-wrapper'),
     doInstanceCollection = require('./doInstanceCollection'),
-    doActionCollection = require('./doActionCollection');
+    doActionCollection = require('./doActionCollection'),
+    providerName = 'do',
+    common = require('../../common'),
+    event = {};
 
 var status = function (config) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
 
+        event = common.createEvent('do.status', config);
+
         _init(config)
-            .then(function(_do){ return _getStatus(_do, config);})
-            .then(resolve)
-            .catch(reject);
+            .then(_getStatus.bind(null, config))
+            .then(common.resolver.bind(null, resolve, event))
+            .catch(common.rejecter.bind(null, reject, event));
     });
 };
 
-/*
- TODO: missing documentation
- */
 var stop = function (config, dropletId) {
     return new Promise(function(resolve, reject) {
         var doAction = {
             type: 'shutdown'
         };
 
+        event = common.createEvent('do.stop', {config: config, id: dropletId});
+
         _init(config)
-            .then(function(api){
-                return _requestAction(api, dropletId, doAction, 'stop');
-            })
-            .then(resolve)
-            .catch(reject);
+            .then(_requestAction.bind(null, dropletId, doAction, 'stop'))
+            .then(common.resolver.bind(null, resolve, event))
+            .catch(common.rejecter.bind(null, reject, event));
     });
 };
 
-/*
- TODO: missing documentation
- */
 var start = function (config, dropletId) {
     return new Promise(function(resolve, reject) {
         var doAction = {
             type: 'power_on'
         };
 
+        event = common.createEvent('do.start', {config: config, id: dropletId});
+
         _init(config)
-            .then(function(api){
-                return _requestAction(api, dropletId, doAction, 'start');
-            })
-            .then(resolve)
-            .catch(reject);
+            .then(_requestAction.bind(null, dropletId, doAction, 'start'))
+            .then(common.resolver.bind(null, resolve, event))
+            .catch(common.rejecter.bind(null, reject, event));
     });
 };
 
-/*
- TODO: missing documentation
- */
 var terminate = function (config, dropletId) {
     return new Promise(function(resolve, reject) {
 
         var actionCollection = new doActionCollection();
 
+        event = common.createEvent('do.terminate', {config: config, id: dropletId});
+
         _init(config)
             .then(function(api){
                 api.dropletsDelete(dropletId, function(err, res, body){
                     if (err)
-                        return reject(err);
+                        return common.rejecter(reject, event, err);
                     else {
                         actionCollection.parseAction(body, {type: 'delete'}, dropletId);
-                        return resolve(actionCollection.actions);
+                        return common.resolver(resolve, event, actionCollection.actions);
                     }
 
                 });
             })
-            .catch(reject);
+            .catch(common.rejecter.bind(null, reject, event));
 
     });
 };
 
-/*
-    TODO: missing documentation
-*/
 var create = function (config, properties) {
     return new Promise(function(resolve, reject) {
         var doProperties = parseProperties(properties);
         if(!isValidPropertiesObject(doProperties)) return reject ('invalid properties object');
+
+        event = common.createEvent('do.create', {config: config, properties: properties});
 
         doProperties.private_networking = true;
         var actionCollection = new doActionCollection();
@@ -91,19 +88,18 @@ var create = function (config, properties) {
             .then(function(api){
                 api.dropletsCreate(doProperties, function(err, res, body){
                     if (err)
-                        return reject(err);
+                        return common.rejecter(reject, event, err);
                     else {
                         actionCollection.parseCreation(body);
-                        return resolve(actionCollection.actions);
+                        return common.resolver(resolve, event, actionCollection.actions);
                     }
                 });
             })
-            .catch(reject);
+            .catch(common.rejecter.bind(null, reject, event));
     });
 };
 
 var _init = function(config){
-
     if (!config) return reject('Bad configuration');
     if (!config.token) return reject('token is required');
 
@@ -112,8 +108,7 @@ var _init = function(config){
     });
 };
 
-/*Internal method, Pending Doc*/
-var _getStatus = function(api, config){
+var _getStatus = function(config, api){
     return new Promise(function(resolve, reject){
         var collection = new doInstanceCollection();
 
@@ -128,8 +123,7 @@ var _getStatus = function(api, config){
     });
 };
 
-/*Internal method, Pending Doc*/
-var _requestAction = function(api, dropletId, doAction, cmanAction){
+var _requestAction = function(dropletId, doAction, cmanAction, api){
     return new Promise(function(resolve, reject){
         var actionCollection = new doActionCollection();
 
@@ -144,12 +138,10 @@ var _requestAction = function(api, dropletId, doAction, cmanAction){
     });
 };
 
-/*Pending Doc*/
 var handleError = function(err){
     //TODO (maybe): Errors should be logged in here.
     console.log(err.stack);
 };
-
 
 var rawImages = function(){
     return [
@@ -301,7 +293,6 @@ var getDispositions =  function(){
         image: validImages()
     };
 };
-
 
 module.exports = {
     status: status,
