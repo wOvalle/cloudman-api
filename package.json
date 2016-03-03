@@ -6,6 +6,7 @@
     "aws-sdk": "^2.2.18",
     "bluebird": "^3.0.5",
     "do-wrapper": "^3.0.1",
+    "hat": "0.0.3",
     "lodash": "^3.10.1",
     "opennebula": "^1.0.7"
   },

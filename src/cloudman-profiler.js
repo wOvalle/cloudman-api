@@ -15,9 +15,8 @@ exports.status = function (opts) {
     logEvent(event, opts);
 
     return cloudman.status.call(self, opts)
-        .then(logSuccessfulPromise.bind(null, event))
-        .then(resolve)
-        .catch(logRejectedPromise.bind(null, event));
+        .then(resolver.bind(null, resolve, event))
+        .catch(rejecter.bind(null, reject, event));
     });
 };
 
@@ -32,9 +31,8 @@ exports.start = function (opts) {
         logEvent(event, opts);
 
         return cloudman.start.call(self, opts)
-            .then(logSuccessfulPromise.bind(null, event))
-            .then(resolve)
-            .catch(logRejectedPromise.bind(null, event));
+            .then(resolver.bind(null, resolve, event))
+            .catch(rejecter.bind(null, reject, event));
     });
 };
 
@@ -49,12 +47,10 @@ exports.stop = function (opts) {
         logEvent(event, opts);
 
         return cloudman.stop.call(self, opts)
-            .then(logSuccessfulPromise.bind(null, event))
-            .then(resolve)
-            .catch(logRejectedPromise.bind(null, event));
+            .then(resolver.bind(null, resolve, event))
+            .catch(rejecter.bind(null, reject, event));
     });
 };
-
 
 exports.terminate = function (opts) {
     var self = this;
@@ -67,12 +63,10 @@ exports.terminate = function (opts) {
         logEvent(event, opts);
 
         return cloudman.terminate.call(self, opts)
-            .then(logSuccessfulPromise.bind(null, event))
-            .then(resolve)
-            .catch(logRejectedPromise.bind(null, event));
+            .then(resolver.bind(null, resolve, event))
+            .catch(rejecter.bind(null, reject, event));
     });
 };
-
 
 exports.create = function (opts) {
     var self = this;
@@ -85,9 +79,8 @@ exports.create = function (opts) {
         logEvent(event, opts);
 
         return cloudman.create.call(self, opts)
-            .then(logSuccessfulPromise.bind(null, event))
-            .then(resolve)
-            .catch(logRejectedPromise.bind(null, event));
+            .then(resolver.bind(null, resolve, event))
+            .catch(rejecter.bind(null, reject, event));
     });
 };
 
@@ -102,9 +95,8 @@ exports.validDispositions = function () {
         logEvent(event, opts);
 
         return cloudman.validDispositions.call(self)
-            .then(logSuccessfulPromise.bind(null, event))
-            .then(resolve)
-            .catch(logRejectedPromise.bind(null, event));
+            .then(resolver.bind(null, resolve, event))
+            .catch(rejecter.bind(null, reject, event));
     });
 };
 
@@ -119,9 +111,8 @@ exports.validProviders = function () {
         logEvent(event, opts);
 
         return cloudman.validProviders.call(self)
-            .then(logSuccessfulPromise.bind(null, event))
-            .then(resolve)
-            .catch(logRejectedPromise.bind(null, event));
+            .then(resolver.bind(null, resolve, event))
+            .catch(rejecter.bind(null, reject, event));
     });
 };
 
@@ -136,9 +127,8 @@ exports.validAccounts = function () {
         logEvent(event, opts);
 
         return cloudman.validAccounts.call(self)
-            .then(logSuccessfulPromise.bind(null, event))
-            .then(resolve)
-            .catch(logRejectedPromise.bind(null, event));
+            .then(resolver.bind(null, resolve, event))
+            .catch(rejecter.bind(null, reject, event));
     });
 };
 
@@ -157,21 +147,17 @@ var logEvent = function(event, opts){
     logger.log(event.type, event.event + ' event in ' + event.method + ' method at ' + getCurrentTime() + ' with valid '+(event.success?'result':'options')+ ': ' + JSON.stringify(opts));
 }
 
-var logSuccessfulPromise = function(event, result){
-    return new Promise(function (resolve, reject){
-        event.event = 'finish';
-        event.success = true;
-        logEvent(event, result);
-        resolve(result);
-    });
+var resolver = function(resolve, event, result){
+    event.event = 'finish';
+    event.success = true;
+    logEvent(event, result);
+    resolve(result);
 }
 
-var logRejectedPromise = function(event, result){
-    return new Promise(function (resolve, reject){
-        event.event = event.type = 'error';
-        logEvent(event, result);
-        reject(result);
-    });
+var rejecter = function(reject, event, result){
+    event.event = event.type = 'error';
+    logEvent(event, result);
+    reject(result);
 }
 
 var getCurrentTime = function(){
