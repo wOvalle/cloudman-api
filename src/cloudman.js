@@ -67,7 +67,7 @@ exports.status = function (keyNames) {
 exports.start = function (matchingInstances) {
     return new Promise(function (resolve, reject) {
         if (!_.get(matchingInstances, '[0].keyName')) return reject('matchingInstances parameter is invalid');
-        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');s
+        if (!credentials || _.isEmpty(credentials)) return reject('credentials is not defined. Please run cloudman.init');
 
         var insWithCred = splitInstancesWithCredentials(matchingInstances, credentials);
 

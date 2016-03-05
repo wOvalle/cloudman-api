@@ -1,6 +1,6 @@
 {
   "name": "cloudman-api",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "",
   "dependencies": {
     "aws-sdk": "^2.2.18",
