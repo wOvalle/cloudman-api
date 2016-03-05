@@ -2,9 +2,10 @@ var Promise = require('bluebird'),
     _ = require('lodash'),
     ec2Collection = require('./ec2InstanceCollection'),
     ec2ActionCollection = require('./ec2ActionCollection'),
-    providerName = 'aws'
+    providerName = 'aws',
+    common = require('../../common'),
+    event = {};
 
-/*Internal method, Pending Doc*/
 var _initEC2 = function(config){
     return new Promise(function(resolve, reject) {
 
@@ -20,11 +21,12 @@ var _initEC2 = function(config){
             secretAccessKey: config.secret,
             region: config.region
         });
+
         resolve(new aws.EC2());
     });
 };
 
-/*Pending Doc.
+/*
 
  Input: config {
  key: Aws key.
@@ -37,63 +39,65 @@ var status = function (config) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
 
+        event = common.createEvent('aws.status', config);
+
         _initEC2(config)
             .then(function(ec2){return _getStatus(ec2, config);})
             .then(function(res){
-                return resolve(_.filter(res.instances, function(i){return i.state !== 'terminated'}));
+                var activeInstances = _.filter(res.instances, function(i){return i.state !== 'terminated'})
+                return common.resolver(resolve, event, activeInstances);
+
             })
-            .catch(reject);
+            .catch(common.rejecter.bind(null, reject, event));
 
     });
 };
 
-/*
- TODO: missing documentation
- */
 var stop = function (config, instancesIds) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
         if(!instancesIds) return reject('instancesIds must have an array of instances to stop.');
 
+        event = common.createEvent('aws.stop', config);
+
         _initEC2(config)
             .then(function(ec2){
                 return _stopInstances(ec2, instancesIds);
             })
-            .then(resolve)
-            .catch(reject);
+            .then(common.resolver.bind(null, resolve, event))
+            .catch(common.rejecter.bind(null, reject, event));
     });
 };
 
-/*
- TODO: missing documentation
- */
 var start = function (config, instancesIds) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
         if(!instancesIds) return reject('instancesIds must have an array of instances to start.');
+
+        event = common.createEvent('aws.start', config);
+
         _initEC2(config)
             .then(function(ec2){
                 return _startInstances(ec2, instancesIds);
             })
-            .then(resolve)
-            .catch(reject);
+            .then(common.resolver.bind(null, resolve, event))
+            .catch(common.rejecter.bind(null, reject, event));
     });
 };
 
-/*
- TODO: missing documentation
- */
 var terminate = function (config, instancesIds) {
     return new Promise(function(resolve, reject) {
         if(!config) return reject('config var must have credential information.');
         if(!instancesIds) return reject('instancesIds must have an array of instances to terminate.');
 
+        event = common.createEvent('aws.terminate', config);
+
         _initEC2(config)
             .then(function(ec2){
                 return _terminateInstances(ec2, instancesIds);
             })
-            .then(resolve)
-            .catch(reject);
+            .then(common.resolver.bind(null, resolve, event))
+            .catch(common.rejecter.bind(null, reject, event));
     });
 };
 
@@ -109,6 +113,8 @@ var create = function(config, properties){
         if(!isValidPropertiesObject(awsProperties)) return reject ('invalid properties object');
 
         var actionCollection = new ec2ActionCollection();
+
+        event = common.createEvent('aws.create', config);
 
         _initEC2(config)
             .then(function(ec2){
@@ -138,17 +144,16 @@ var create = function(config, properties){
                         };
 
                         ec2.createTags(params, function(err, data){
-                            if (err) return reject(err);
-                            else return resolve(actionCollection.actions);
+                            if (err) return common.rejecter(reject, event, err);
+                            else return common.resolver(resolve, event, actionCollection.actions);
                         });
                     });
                 });
             })
-            .catch(reject);
+            .catch(common.rejecter.bind(null, reject, event));
     });
 };
 
-/*Internal method, Pending Doc*/
 var _getStatus = function(ec2, config){
     return new Promise(function(resolve, reject){
         var collection = new ec2Collection();
@@ -163,7 +168,6 @@ var _getStatus = function(ec2, config){
     });
 };
 
-/*Internal method, Pending Doc*/
 var _stopInstances = function(ec2, InstanceIds){
     return new Promise(function(resolve, reject){
         var actionCollection = new ec2ActionCollection();
@@ -180,7 +184,6 @@ var _stopInstances = function(ec2, InstanceIds){
     });
 };
 
-/*Internal method, Pending Doc*/
 var _startInstances = function(ec2, InstanceIds){
     return new Promise(function(resolve, reject){
         var actionCollection = new ec2ActionCollection();
@@ -212,7 +215,6 @@ var _images = function(ec2){
     });
 };
 
-/*Internal method, Pending Doc*/
 var _terminateInstances = function(ec2, InstanceIds){
     return new Promise(function(resolve, reject){
         var actionCollection = new ec2ActionCollection();
@@ -229,7 +231,6 @@ var _terminateInstances = function(ec2, InstanceIds){
     });
 };
 
-/*Pending Doc*/
 var handleError = function(err){
     //TODO (maybe): Errors should be logged in here.
     console.log(err.stack);
