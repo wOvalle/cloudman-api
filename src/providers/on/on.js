@@ -13,7 +13,7 @@ exports.status = function(config) {
         if (!config) return reject('config var must have credential information.');
 
         var collection = new onInstanceCollection();
-        event = common.createEvent('aws.status', config);
+        event = common.createEvent('on.status', config);
 
         exports._init(config)
             .then(function (one) {
@@ -33,7 +33,7 @@ exports.stop = function(config, id) {
 
         var actionOn = 'stop';
 
-        event = common.createEvent('aws.stop', config);
+        event = common.createEvent('on.stop', config);
 
         exports._init(config)
             .then(function (one) {
@@ -50,7 +50,7 @@ exports.start = function(config, id) {
 
         var actionOn = 'resume';
 
-        event = common.createEvent('aws.start', config);
+        event = common.createEvent('on.start', config);
 
         exports._init(config)
             .then(function (one) {
@@ -66,7 +66,7 @@ exports.terminate = function(config, id) {
         if (!config) return reject('config var must have credential information.');
 
         var actionOn = 'delete';
-        event = common.createEvent('aws.status', config);
+        event = common.createEvent('on.terminate', config);
 
         exports._init(config)
             .then(function (one) {

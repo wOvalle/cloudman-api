@@ -8,7 +8,7 @@ var cloudman  = require('./cloudman'),
 exports.status = function (opts) {
     var self = this;
     return new Promise(function (resolve, reject){
-        event = common.createEvent('status', opts);
+        event = common.createEvent('gen.status', opts);
 
         return cloudman.status.call(self, opts)
             .then(common.resolver.bind(null, resolve, event))
@@ -19,7 +19,7 @@ exports.status = function (opts) {
 exports.start = function (opts) {
     var self = this;
     return new Promise(function (resolve, reject){
-        event = common.createEvent('start', opts);
+        event = common.createEvent('gen.start', opts);
 
         return cloudman.start.call(self, opts)
             .then(common.resolver.bind(null, resolve, event))
@@ -30,7 +30,7 @@ exports.start = function (opts) {
 exports.stop = function (opts) {
     var self = this;
     return new Promise(function (resolve, reject){
-        event = common.createEvent('stop', opts);
+        event = common.createEvent('gen.stop', opts);
 
         return cloudman.stop.call(self, opts)
             .then(common.resolver.bind(null, resolve, event))
@@ -41,7 +41,7 @@ exports.stop = function (opts) {
 exports.terminate = function (opts) {
     var self = this;
     return new Promise(function (resolve, reject){
-        event = common.createEvent('terminate', opts);
+        event = common.createEvent('gen.terminate', opts);
 
         return cloudman.terminate.call(self, opts)
             .then(common.resolver.bind(null, resolve, event))
@@ -52,7 +52,7 @@ exports.terminate = function (opts) {
 exports.create = function (opts) {
     var self = this;
     return new Promise(function (resolve, reject){
-        event = common.createEvent('create', opts);
+        event = common.createEvent('gen.create', opts);
 
         return cloudman.create.call(self, opts)
             .then(common.resolver.bind(null, resolve, event))
@@ -63,7 +63,7 @@ exports.create = function (opts) {
 exports.validDispositions = function () {
     var self = this;
     return new Promise(function (resolve, reject){
-        event = common.createEvent('validDispositions');
+        event = common.createEvent('gen.validDispositions');
 
         return cloudman.validDispositions.call(self)
             .then(common.resolver.bind(null, resolve, event))
@@ -74,7 +74,7 @@ exports.validDispositions = function () {
 exports.validProviders = function () {
     var self = this;
     return new Promise(function (resolve, reject){
-        event = common.createEvent('validDispositions');
+        event = common.createEvent('gen.validDispositions');
 
         return cloudman.validProviders.call(self)
             .then(common.resolver.bind(null, resolve, event))
@@ -85,7 +85,7 @@ exports.validProviders = function () {
 exports.validAccounts = function () {
     var self = this;
     return new Promise(function (resolve, reject){
-        event = common.createEvent('validAccounts');
+        event = common.createEvent('gen.validAccounts');
 
         return cloudman.validAccounts.call(self)
             .then(common.resolver.bind(null, resolve, event))
